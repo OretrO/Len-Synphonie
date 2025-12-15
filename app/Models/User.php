@@ -45,4 +45,36 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    /**
+     * Get the partitions created by the user.
+     */
+    public function partitions()
+    {
+        return $this->hasMany(Partition::class);
+    }
+
+    /**
+     * Get the arrangements created by the user.
+     */
+    public function arrangements()
+    {
+        return $this->hasMany(Arrangement::class);
+    }
+
+    /**
+     * Get the comments created by the user.
+     */
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Get the likes created by the user.
+     */
+    public function likes()
+    {
+        return $this->hasMany(Like::class);
+    }
 }
