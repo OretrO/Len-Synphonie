@@ -110,7 +110,6 @@ class Utilise {
 
 class Appreciation {
   - is_like: Boolean
-  - created_at: Timestamp
 }
 (User, Arrangement) .. (Appreciation) : "0..* .. 0..*"
 User "1" -- "0..*" Partition
@@ -120,11 +119,7 @@ User "1" -- "0..*" Comment
 Partition "1" -- "0..*" Arrangement
 
 Arrangement "1" -- "0..*" Comment
-Arrangement "0..*" .. "0..*" Utilise
-Utilise "0..*" .. "1" Instrument
 
-User "0..*" .. "0..*" Appreciation
-Appreciation "0..*" .. "1" Arrangement
 ```
 
 ---
@@ -197,20 +192,19 @@ entity "comments" as comments {
   updated_at: TIMESTAMP
 }
 
-entity "appreciations" as appreciations {
-  <b>id</b>: INTEGER
-  --
-  <i>user_id</i>: INTEGER
-  <i>arrangement_id</i>: INTEGER
-  is_like: BOOLEAN
-  created_at: TIMESTAMP
-}
-
 entity "user_arrangements" as user_arrangements {
   <b>id</b>: INTEGER
   --
   <i>user_id</i>: INTEGER
   <i>arrangement_id</i>: INTEGER
+  created_at: TIMESTAMP
+}
+
+entity "appreciations" as appreciations {
+  <b>id</b>: INTEGER
+  --
+  <i>user_arrangement_id</i>: INTEGER
+  is_like: BOOLEAN
   created_at: TIMESTAMP
 }
 
@@ -220,8 +214,7 @@ users ||--o{ comments : "user_id"
 users ||..o{ user_arrangements : "user_id"
 arrangements ||..o{ user_arrangements : "arrangement_id"
 
-user_arrangements ||..o{ appreciations : "user/arrangement"
-arrangements ||..o{ appreciations : "arrangement_id"
+user_arrangements ||..o{ appreciations : "user_arrangement_id"
 
 partitions ||--o{ arrangements : "partition_id"
 
