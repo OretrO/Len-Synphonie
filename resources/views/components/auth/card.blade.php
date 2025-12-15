@@ -1,18 +1,22 @@
 @props(['title', 'subtitle' => null])
 
-<div class="w-full max-w-md">
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700">
-        <!-- En-tête -->
-        <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-                {{ $title }}
-            </h1>
-            @if($subtitle)
-                <p class="text-sm text-gray-600 dark:text-gray-400">
-                    {!! $subtitle !!}
-                </p>
-            @endif
-        </div>
+<div {{ $attributes->merge(['class' => 'w-full max-w-md mx-auto']) }}>
+    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700 transform transition-shadow duration-300 hover:shadow-2xl">
+        <!-- En-tête (utilise un slot `header` si fourni pour personnaliser) -->
+        @if(isset($header) && trim($header) !== '')
+            {{ $header }}
+        @else
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                    {{ $title }}
+                </h1>
+                @if($subtitle)
+                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                        {!! $subtitle !!}
+                    </p>
+                @endif
+            </div>
+        @endif
 
         <!-- Messages d'alerte -->
         @if (session('status'))
@@ -35,4 +39,3 @@
         {{ $slot }}
     </div>
 </div>
-

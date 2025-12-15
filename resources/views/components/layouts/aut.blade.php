@@ -22,7 +22,7 @@
     </header>
 
     <!-- Contenu principal -->
-    <main class="container mx-auto px-4 py-8 flex items-center justify-center min-h-[calc(100vh-200px)]">
+    <main class="px-4 py-8 flex items-center justify-center min-h-[calc(100vh-200px)]">
         {{ $slot }}
     </main>
 

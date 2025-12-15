@@ -9,7 +9,7 @@
             <a href="{{ route('about') }}" class="navbar-link">About</a>
             <a href="{{ route('contact') }}" class="navbar-link">Contact</a>
             <a href="{{ route('register') }}" class="navbar-link">Inscription</a>
-            <a href="{{ route('login') }}" class="navbar-link">Inscription</a>
+            <a href="{{ route('login')}}" class="navbar-link">login</a>
 
         </div>
     </div>
