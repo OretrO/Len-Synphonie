@@ -34,17 +34,18 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Routes des partitions (accessibles à tous - visitor peut voir la liste)
 Route::get('/partitions', [PartitionController::class, 'index'])->name('partitions.index');
 
-// Routes nécessitant une authentification (user, arranger, admin peuvent voir les détails)
-Route::middleware('auth')->group(function () {
-    Route::get('/partitions/{partition}', [PartitionController::class, 'show'])->name('partitions.show');
-});
-
 // Routes pour arrangers et admins (création, modification, suppression)
+// IMPORTANT: /create doit être avant /{partition} pour éviter les conflits
 Route::middleware(['auth'])->group(function () {
     Route::get('/partitions/create', [PartitionController::class, 'create'])->name('partitions.create');
     Route::post('/partitions', [PartitionController::class, 'store'])->name('partitions.store');
     Route::get('/partitions/{partition}/edit', [PartitionController::class, 'edit'])->name('partitions.edit');
     Route::put('/partitions/{partition}', [PartitionController::class, 'update'])->name('partitions.update');
     Route::delete('/partitions/{partition}', [PartitionController::class, 'destroy'])->name('partitions.destroy');
+});
+
+// Routes nécessitant une authentification (user, arranger, admin peuvent voir les détails)
+Route::middleware('auth')->group(function () {
+    Route::get('/partitions/{partition}', [PartitionController::class, 'show'])->name('partitions.show');
 });
 

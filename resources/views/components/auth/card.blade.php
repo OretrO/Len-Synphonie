@@ -1,17 +1,17 @@
 @props(['title', 'subtitle' => null])
 
-<div {{ $attributes->merge(['class' => 'w-full max-w-md mx-auto']) }}>
-    <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl p-8 border border-gray-200 dark:border-gray-700 transform transition-shadow duration-300 hover:shadow-2xl">
+<div {{ $attributes->merge(['class' => 'auth-card']) }}>
+    <div class="auth-card-inner relative">
         <!-- En-tête (utilise un slot `header` si fourni pour personnaliser) -->
         @if(isset($header) && trim($header) !== '')
             {{ $header }}
         @else
             <div class="text-center mb-8">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">
+                <h1 class="auth-title text-3xl">
                     {{ $title }}
                 </h1>
                 @if($subtitle)
-                    <p class="text-sm text-gray-600 dark:text-gray-400">
+                    <p class="auth-subtitle">
                         {!! $subtitle !!}
                     </p>
                 @endif
@@ -20,14 +20,20 @@
 
         <!-- Messages d'alerte -->
         @if (session('status'))
-            <div class="mb-6 p-4 rounded-lg bg-green-50 border border-green-200 text-green-800 dark:bg-green-900/20 dark:border-green-800 dark:text-green-400">
-                {{ session('status') }}
+            <div class="alert alert-success mb-6">
+                <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <span>{{ session('status') }}</span>
             </div>
         @endif
 
         @if ($errors->any())
-            <div class="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-800 dark:bg-red-900/20 dark:border-red-800 dark:text-red-400">
-                <ul class="list-disc list-inside text-sm">
+            <div class="alert alert-error mb-6">
+                <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <ul class="alert-list text-sm">
                     @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                     @endforeach

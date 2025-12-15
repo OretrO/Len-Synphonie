@@ -1,80 +1,62 @@
-<x-layouts.app>
-    <x-slot:title>Mot de passe oublié</x-slot:title>
-
-    <div class="page-container">
-        <div class="card register-card">
-            <h1 class="card-title">Mot de passe oublié ?</h1>
-
-            <p class="card-text">
-                Saisissez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.
-            </p>
-
-            @if (session('status'))
-                <div class="alert alert-success">
-                    <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+<x-layouts.aut title="Mot de passe oublié">
+    <x-auth.card>
+        <x-slot name="header">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 mx-auto mb-4 rounded-full flex items-center justify-center" style="background: linear-gradient(135deg, rgba(255, 45, 117, 0.2), rgba(181, 55, 242, 0.2));">
+                    <svg class="w-8 h-8" style="color: #ff2d75;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                     </svg>
-                    <div>
-                        {{ session('status') }}
-                    </div>
                 </div>
-            @endif
+                <h1 class="auth-title text-2xl">Mot de passe oublié ?</h1>
+                <p class="auth-subtitle mt-2">Pas de panique, nous allons vous aider</p>
+            </div>
+        </x-slot>
 
-            @if ($errors->any())
-                <div class="alert alert-error">
-                    <svg class="alert-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <p class="text-sm text-slate-400 text-center mb-6">
+            Saisissez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+        </p>
+
+        <form action="{{ route('password.email') }}" method="POST" class="space-y-6" novalidate>
+            @csrf
+
+            <div class="form-group">
+                <label for="email" class="form-label">Adresse e-mail</label>
+                <div class="input-icon-wrapper">
+                    <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                     </svg>
-                    <div>
-                        <ul class="alert-list">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                </div>
-            @endif
-
-            <form action="{{ route('password.email') }}" method="POST" class="register-form">
-                @csrf
-
-                <div class="form-field">
-                    <label for="email" class="form-label">
-                        Adresse e-mail <span class="required">*</span>
-                    </label>
                     <input
                         type="email"
                         id="email"
                         name="email"
-                        class="form-input @error('email') form-input-error @enderror"
+                        class="form-input"
                         value="{{ old('email') }}"
                         required
                         autofocus
                         autocomplete="email"
                         placeholder="john.doe@example.com"
                     >
-                    @error('email')
-                        <span class="form-error">{{ $message }}</span>
-                    @enderror
                 </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary btn-large">
-                        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                        </svg>
-                        Envoyer le lien de réinitialisation
-                    </button>
-                </div>
-            </form>
-
-            <div class="register-footer">
-                <p class="register-footer-text">
-                    Vous vous souvenez de votre mot de passe ?
-                    <a href="#" class="register-footer-link">Se connecter</a>
-                </p>
+                @error('email') <p class="form-error">{{ $message }}</p> @enderror
             </div>
-        </div>
-    </div>
-</x-layouts.app>
 
+            <button type="submit" class="btn btn-primary w-full ripple">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+                Envoyer le lien
+            </button>
+        </form>
+
+        <div class="auth-divider mt-6"><span>ou</span></div>
+
+        <div class="text-center mt-4">
+            <a href="{{ route('login') }}" class="auth-link">
+                <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Retour à la connexion
+            </a>
+        </div>
+    </x-auth.card>
+</x-layouts.aut>
