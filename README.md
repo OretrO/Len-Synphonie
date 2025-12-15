@@ -104,7 +104,6 @@ class Comment {
 }
 
 class Like {
-  - is_like: Boolean
   - created_at: Timestamp
 }
 
@@ -113,6 +112,7 @@ class Utilise {
 }
 
 class Appreciation {
+  - is_like: Boolean
   - created_at: Timestamp
 }
 
@@ -136,7 +136,6 @@ Like "0..*" -- "1" Arrangement
 ## MLD (Modèle Logique de Données)
 
 ```plantuml
-@startuml
 hide methods
 hide stereotypes
 
@@ -206,7 +205,6 @@ entity "likes" as likes {
   <b>id</b>: INTEGER
   --
   <i>arrangement_id</i>: INTEGER
-  is_like: BOOLEAN
   created_at: TIMESTAMP
 }
 
@@ -215,6 +213,7 @@ entity "appreciations" as appreciations {
   --
   <i>user_id</i>: INTEGER
   <i>like_id</i>: INTEGER
+  is_like: BOOLEAN
   created_at: TIMESTAMP
 }
 
@@ -241,6 +240,4 @@ arrangements ||--o{ user_arrangements : "arrangement_id"
 instruments ||--o{ arrangement_instruments : "instrument_id"
 
 likes ||--o{ appreciations : "like_id"
-
-@enduml
 ```
