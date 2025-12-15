@@ -30,7 +30,7 @@ class Appreciation extends Pivot
      */
     protected $fillable = [
         'user_id',
-        'like_id',
+        'arrangement_id',
         'is_like',
     ];
 
@@ -55,11 +55,11 @@ class Appreciation extends Pivot
     }
 
     /**
-     * Get the like associated with the appreciation.
+     * Get the arrangement that was appreciated.
      */
-    public function like()
+    public function arrangement()
     {
-        return $this->belongsTo(Like::class);
+        return $this->belongsTo(Arrangement::class);
     }
 }
 

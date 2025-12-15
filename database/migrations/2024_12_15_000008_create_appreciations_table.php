@@ -13,12 +13,13 @@ return new class extends Migration
     {
         Schema::create('appreciations', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_arrangement_id')->constrained('user_arrangements')->onDelete('cascade');
-            $table->boolean('is_like');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('arrangement_id')->constrained()->onDelete('cascade');
+            $table->boolean('is_like'); // true for like, false for dislike
             $table->timestamps();
 
-            // Assurer qu'une seule appréciation par relation user-arrangement
-            $table->unique(['user_arrangement_id']);
+            // Un utilisateur ne peut apprécier un arrangement qu'une seule fois
+            $table->unique(['user_id', 'arrangement_id']);
         });
     }
 
