@@ -1,59 +1,248 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Tableau des Tâches par Membre
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+| Sprint | Membre       | Tâches                  | Statut   |
+|--------|--------------|-------------------------|----------|
+| 1      | Regniez Léo  | \#12, \#13, \#14, \#15  | Terminée |
+| 1      | Strobbe Théo | \#9, \#10, \#11         | Terminée |
+| 1      | Bras Tristan | \#8, \#7, \#3           | Terminée |
+| 1      | Plouvain     | \#6, \#5, \#4, \#2, \#1 | Terminée |
 
-## About Laravel
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Justification de l'Utilisation de l'IA
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Contexte
+Le projet LenSymphony-Web est un projet SAE S3.A.01 nécessitant une stack technique complexe (Laravel, Vue.js, MusicXML, synthèse audio). L'IA à été utilisée pour accélérer certaines phases de développement cependant:
+- 
+- Chaque code généré est **revu et validé** avant intégration
+- Les décisions techniques importantes sont **prises collectivement**
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
 
-## Laravel Sponsors
+# Dictionnaire de Données - LenSymphony-Web
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### User (Utilisateur)
+| Attribut | Type | Description | Contraintes |
+|----------|------|-------------|-------------|
+| id | Integer | Identifiant unique | PK, Auto-increment |
+| name | String | Nom de l'utilisateur | Required, Max: 255 |
+| email | String | Adresse email | Required, Unique |
+| password | String | Mot de passe hashé | Required, Min: 8 |
+| role | Enum | Rôle de l'utilisateur | visitor, user, arranger, admin |
+| created_at | Timestamp | Date de création | Auto |
+| updated_at | Timestamp | Date de modification | Auto |
 
-### Premium Partners
+### Partition
+| Attribut | Type | Description | Contraintes |
+|----------|------|-------------|-------------|
+| id | Integer | Identifiant unique | PK, Auto-increment |
+| title | String | Titre de la partition | Required, Max: 255 |
+| composer | String | Compositeur | Nullable, Max: 255 |
+| musicxml_file_path | String | Chemin du fichier MusicXML | Required |
+| user_id | Integer | Créateur de la partition | FK → User.id |
+| created_at | Timestamp | Date d'import | Auto |
+| updated_at | Timestamp | Date de modification | Auto |
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+### Arrangement
+| Attribut | Type | Description | Contraintes |
+|----------|------|-------------|-------------|
+| id | Integer | Identifiant unique | PK, Auto-increment |
+| partition_id | Integer | Partition associée | FK → Partition.id |
+| user_id | Integer | Créateur de l'arrangement | FK → User.id |
+| name | String | Nom de l'arrangement | Required, Max: 255 |
+| instruments_config | JSON | Configuration des instruments | Required |
+| audio_file_path | String | Chemin du fichier audio généré | Nullable |
+| status | Enum | Statut de la synthèse | pending, processing, completed, failed |
+| created_at | Timestamp | Date de création | Auto |
+| updated_at | Timestamp | Date de modification | Auto |
 
-## Contributing
+### Comment (Commentaire)
+| Attribut | Type | Description | Contraintes |
+|----------|------|-------------|-------------|
+| id | Integer | Identifiant unique | PK, Auto-increment |
+| arrangement_id | Integer | Arrangement commenté | FK → Arrangement.id |
+| user_id | Integer | Auteur du commentaire | FK → User.id |
+| content | Text | Contenu du commentaire | Required |
+| created_at | Timestamp | Date de création | Auto |
+| updated_at | Timestamp | Date de modification | Auto |
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Like (Appréciation)
+| Attribut | Type | Description | Contraintes |
+|----------|------|-------------|-------------|
+| id | Integer | Identifiant unique | PK, Auto-increment |
+| arrangement_id | Integer | Arrangement apprécié | FK → Arrangement.id |
+| user_id | Integer | Utilisateur | FK → User.id |
+| is_like | Boolean | Like (true) ou Dislike (false) | Required |
+| created_at | Timestamp | Date de création | Auto |
+| updated_at | Timestamp | Date de modification | Auto |
 
-## Code of Conduct
+---
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## MCD (Modèle Conceptuel de Données)
 
-## Security Vulnerabilities
+```plantuml
+skinparam classAttributeIconSize 0
+hide empty members
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+class User {
+  - name: String
+  - email: String {unique}
+  - password: String
+  - role: Enum
+  - created_at: Timestamp
+  - updated_at: Timestamp
+}
 
-## License
+class Partition {
+  - title: String
+  - composer: String
+  - musicxml_file_path: String
+  - created_at: Timestamp
+  - updated_at: Timestamp
+}
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+class Arrangement {
+  - name: String
+  - instruments_config: JSON
+  - audio_file_path: String
+  - status: Enum
+  - created_at: Timestamp
+  - updated_at: Timestamp
+}
+
+class Instrument {
+  - name: String
+  - category: String
+  - soundfont_file_path: String
+  - created_at: Timestamp
+  - updated_at: Timestamp
+}
+
+class Comment {
+  - content: Text
+  - created_at: Timestamp
+  - updated_at: Timestamp
+}
+
+class Utilise <<association>> {
+  - track_number: Integer
+}
+
+class Appreciation <<association>> {
+  - is_like: Boolean
+  - created_at: Timestamp
+}
+
+User "1" -- "0..*" Partition : compose
+User "**" -- "0..*" Arrangement : crée
+(User, Arrangement) .. Appreciation
+User "1" -- "0..*" Comment : écrit
+Partition "1" -- "0..*" Arrangement : génère
+Arrangement "1" -- "0..*" Comment : possède
+Arrangement "0..*" -- "0..*" Instrument
+(Arrangement, Instrument) .. Utilise
+```
+
+---
+
+## MLD (Modèle Logique de Données)
+
+```plantuml
+hide methods
+hide stereotypes
+
+entity "users" as users {
+  <b>id</b>: INTEGER
+  --
+  name: VARCHAR(255)
+  email: VARCHAR(255) UNIQUE
+  password: VARCHAR(255)
+  role: ENUM('visitor','user','arranger','admin')
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "partitions" as partitions {
+  <b>id</b>: INTEGER
+  --
+  title: VARCHAR(255)
+  composer: VARCHAR(255) NULL
+  musicxml_file_path: VARCHAR(255)
+  <i>user_id</i>: INTEGER
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "arrangements" as arrangements {
+  <b>id</b>: INTEGER
+  --
+  <i>partition_id</i>: INTEGER
+  name: VARCHAR(255)
+  instruments_config: JSON
+  audio_file_path: VARCHAR(255) NULL
+  status: ENUM('pending','processing','completed','failed')
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "instruments" as instruments {
+  <b>id</b>: INTEGER
+  --
+  name: VARCHAR(255)
+  category: VARCHAR(255)
+  soundfont_file_path: VARCHAR(255)
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "arrangement_instruments" as arrangement_instruments {
+  <b>id</b>: INTEGER
+  --
+  <i>arrangement_id</i>: INTEGER
+  <i>instrument_id</i>: INTEGER
+  track_number: INTEGER
+}
+
+entity "comments" as comments {
+  <b>id</b>: INTEGER
+  --
+  <i>arrangement_id</i>: INTEGER
+  <i>user_id</i>: INTEGER
+  content: TEXT
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "user_arrangements" as user_arrangements {
+  <b>id</b>: INTEGER
+  --
+  <i>user_id</i>: INTEGER
+  <i>arrangement_id</i>: INTEGER
+  created_at: TIMESTAMP
+}
+
+entity "appreciations" as appreciations {
+  <b>id</b>: INTEGER
+  --
+  <i>user_arrangement_id</i>: INTEGER
+  is_like: BOOLEAN
+  created_at: TIMESTAMP
+}
+
+users ||--o{ partitions : "user_id"
+users ||--o{ comments : "user_id"
+
+users ||..o{ user_arrangements : "user_id"
+arrangements ||..o{ user_arrangements : "arrangement_id"
+
+user_arrangements ||..o{ appreciations : "user_arrangement_id"
+
+partitions ||--o{ arrangements : "partition_id"
+
+arrangements ||--o{ arrangement_instruments : "arrangement_id"
+arrangements ||--o{ comments : "arrangement_id"
+
+instruments ||--o{ arrangement_instruments : "instrument_id"
+```
