@@ -709,6 +709,12 @@ nav > div {
     color: #fca5a5;
 }
 
+.alert-success {
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.3);
+    color: #6ee7b7;
+}
+
 .alert-icon {
     width: 1.5rem;
     height: 1.5rem;
