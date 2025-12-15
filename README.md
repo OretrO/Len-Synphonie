@@ -1,11 +1,12 @@
 # Tableau des Tâches par Membre
 
-| Sprint | Membre      | Tâches             | Statut    |
-| 1|-------------|--------------------|-----------|
-| Regniez Léo | #12, #13, #14, #15 | Términée  |
-| [Membre 2]  | [Tâches à définir] | ⏳ À faire |
-| [Membre 3]  | [Tâches à définir] | ⏳ À faire |
-| [Membre 4]  | [Tâches à définir] | ⏳ À faire |
+| Sprint | Membre       | Tâches          | Statut     |
+|--------|--------------|-----------------|------------|
+| 1      | Regniez Léo  | \#12, \#13, \#14, \#15 | Terminée  |
+| 1      | \[Membre 2\] | \[Tâches à définir\] | ⏳ À faire |
+| 1      | \[Membre 3\] | \[Tâches à définir\] | ⏳ À faire |
+| 1      | \[Membre 4\] | \[Tâches à définir\] | ⏳ À faire |
+
 
 ---
 
