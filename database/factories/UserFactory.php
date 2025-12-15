@@ -28,8 +28,9 @@ class UserFactory extends Factory
             'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
             'password' => static::$password ??= Hash::make('password'),
+            'role' => 'user',
+            'avatar' => 'avatars/default.svg',
             'remember_token' => Str::random(10),
-            'role' => fake()->randomElement(['visitor', 'user', 'arranger', 'admin']),
         ];
     }
 
@@ -48,19 +49,15 @@ class UserFactory extends Factory
      */
     public function visitor(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'role' => 'visitor',
-        ]);
+        return $this->state(fn (array $attributes) => ['role' => 'visitor']);
     }
 
     /**
      * Indicate that the user is a regular user.
      */
-    public function regularUser(): static
+    public function user(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'role' => 'user',
-        ]);
+        return $this->state(fn (array $attributes) => ['role' => 'user']);
     }
 
     /**
@@ -68,9 +65,7 @@ class UserFactory extends Factory
      */
     public function arranger(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'role' => 'arranger',
-        ]);
+        return $this->state(fn (array $attributes) => ['role' => 'arranger']);
     }
 
     /**
@@ -78,8 +73,14 @@ class UserFactory extends Factory
      */
     public function admin(): static
     {
-        return $this->state(fn (array $attributes) => [
-            'role' => 'admin',
-        ]);
+        return $this->state(fn (array $attributes) => ['role' => 'admin']);
+    }
+
+    /**
+     * Indicate that the user should have a custom avatar.
+     */
+    public function withAvatar(string $avatarPath): static
+    {
+        return $this->state(fn (array $attributes) => ['avatar' => $avatarPath]);
     }
 }

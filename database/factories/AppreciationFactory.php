@@ -18,8 +18,8 @@ class AppreciationFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_arrangement_id' => UserArrangement::factory(),
             'is_like' => fake()->boolean(70), // 70% de chance d'être un like
+            // user_id and like_id (arrangement) will be set in the seeder
         ];
     }
 

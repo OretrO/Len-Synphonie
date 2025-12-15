@@ -2,6 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\User;
+use App\Models\Partition;
+use App\Models\Instrument;
+use App\Models\Arrangement;
+use App\Models\Comment;
+use App\Models\Appreciation;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -11,33 +17,115 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $this->command->info('🎵 Démarrage du seeding de LenSymphony...');
-
-        // L'ordre est important pour respecter les contraintes de clés étrangères
-        $this->call([
-            UserSeeder::class,
-            InstrumentSeeder::class,
-            PartitionSeeder::class,
-            ArrangementSeeder::class,
-            UserArrangementSeeder::class,
-            AppreciationSeeder::class,
-            CommentSeeder::class,
+        // 1. Création des utilisateurs avec différents rôles
+        $admin = User::factory()->admin()->create([
+            'name' => 'Admin User',
+            'email' => 'admin@lensymphony.com',
         ]);
 
-        $this->command->info('✅ Seeding terminé avec succès !');
-        $this->command->info('');
-        $this->command->info('📊 Résumé des données générées :');
-        $this->command->table(
-            ['Table', 'Nombre d\'enregistrements'],
-            [
-                ['Users', \App\Models\User::count()],
-                ['Instruments', \App\Models\Instrument::count()],
-                ['Partitions', \App\Models\Partition::count()],
-                ['Arrangements', \App\Models\Arrangement::count()],
-                ['User Arrangements', \App\Models\UserArrangement::count()],
-                ['Appreciations', \App\Models\Appreciation::count()],
-                ['Comments', \App\Models\Comment::count()],
-            ]
-        );
+        $arrangers = User::factory()->arranger()->count(5)->create();
+        $users = User::factory()->user()->count(15)->create();
+        $visitors = User::factory()->visitor()->count(5)->create();
+
+        $allUsers = User::all();
+
+        // 2. Création des instruments
+        $instruments = [
+            ['name' => 'Piano', 'category' => 'Keyboard', 'soundfont_file_path' => 'soundfonts/piano.sf2'],
+            ['name' => 'Violin', 'category' => 'Strings', 'soundfont_file_path' => 'soundfonts/violin.sf2'],
+            ['name' => 'Cello', 'category' => 'Strings', 'soundfont_file_path' => 'soundfonts/cello.sf2'],
+            ['name' => 'Flute', 'category' => 'Woodwind', 'soundfont_file_path' => 'soundfonts/flute.sf2'],
+            ['name' => 'Clarinet', 'category' => 'Woodwind', 'soundfont_file_path' => 'soundfonts/clarinet.sf2'],
+            ['name' => 'Trumpet', 'category' => 'Brass', 'soundfont_file_path' => 'soundfonts/trumpet.sf2'],
+            ['name' => 'Guitar', 'category' => 'Strings', 'soundfont_file_path' => 'soundfonts/guitar.sf2'],
+            ['name' => 'Drums', 'category' => 'Percussion', 'soundfont_file_path' => 'soundfonts/drums.sf2'],
+        ];
+
+        foreach ($instruments as $instrumentData) {
+            Instrument::create($instrumentData);
+        }
+
+        $allInstruments = Instrument::all();
+
+        // 3. Création des partitions (créées par les arrangers et l'admin)
+        $creators = $arrangers->concat([$admin]);
+        $partitions = collect();
+
+        foreach ($creators as $creator) {
+            $userPartitions = Partition::factory()->count(rand(2, 5))->create([
+                'user_id' => $creator->id,
+            ]);
+            $partitions = $partitions->concat($userPartitions);
+        }
+
+        // 4. Création des arrangements pour chaque partition
+        foreach ($partitions as $partition) {
+            $arrangementCount = rand(1, 3);
+
+            for ($i = 0; $i < $arrangementCount; $i++) {
+                // Configuration des instruments pour l'arrangement
+                $selectedInstruments = $allInstruments->random(rand(2, 4));
+                $instrumentsConfig = [];
+
+                foreach ($selectedInstruments as $instrument) {
+                    $instrumentsConfig[] = [
+                        'name' => $instrument->name,
+                        'volume' => rand(50, 100),
+                        'pan' => rand(-50, 50),
+                    ];
+                }
+
+                $arrangement = Arrangement::factory()->create([
+                    'partition_id' => $partition->id,
+                    'creator_id' => $partition->user_id, // Le créateur de la partition crée l'arrangement
+                    'instruments_config' => $instrumentsConfig,
+                ]);
+
+                // 5. Créer la relation ArrangementInstruments (table pivot)
+                foreach ($selectedInstruments as $index => $instrument) {
+                    $arrangement->instruments()->attach($instrument->id, [
+                        'track_number' => $index + 1,
+                    ]);
+                }
+
+                // 6. Créer des commentaires sur cet arrangement
+                $commentCount = rand(2, 6);
+                $commentUsers = $allUsers->random(min($commentCount, $allUsers->count()));
+
+                foreach ($commentUsers as $commentUser) {
+                    Comment::factory()->create([
+                        'arrangement_id' => $arrangement->id,
+                        'user_id' => $commentUser->id,
+                    ]);
+                }
+
+                // 7. Créer des appréciations (likes/dislikes) sur cet arrangement
+                $appreciationUsers = $allUsers->random(rand(5, 15));
+
+                foreach ($appreciationUsers as $appreciationUser) {
+                    // Éviter les doublons (unique constraint sur user_id + arrangement_id)
+                    if (!Appreciation::where('user_id', $appreciationUser->id)
+                        ->where('arrangement_id', $arrangement->id)->exists()) {
+
+                        Appreciation::factory()->create([
+                            'user_id' => $appreciationUser->id,
+                            'arrangement_id' => $arrangement->id,
+                        ]);
+                    }
+                }
+            }
+        }
+
+        $this->command->info('Database seeded successfully!');
+        $this->command->info('Users created: ' . User::count());
+        $this->command->info('  - Admins: ' . User::where('role', 'admin')->count());
+        $this->command->info('  - Arrangers: ' . User::where('role', 'arranger')->count());
+        $this->command->info('  - Users: ' . User::where('role', 'user')->count());
+        $this->command->info('  - Visitors: ' . User::where('role', 'visitor')->count());
+        $this->command->info('Partitions created: ' . Partition::count());
+        $this->command->info('Arrangements created: ' . Arrangement::count());
+        $this->command->info('Comments created: ' . Comment::count());
+        $this->command->info('Appreciations created: ' . Appreciation::count());
     }
 }
+
