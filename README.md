@@ -1,3 +1,26 @@
+# Tableau des Tâches par Membre
+
+| Sprint | Membre       | Tâches          | Statut     |
+|--------|--------------|-----------------|------------|
+| 1      | Regniez Léo  | \#12, \#13, \#14, \#15 | Terminée  |
+| 1      | \[Membre 2\] | \[Tâches à définir\] | ⏳ À faire |
+| 1      | \[Membre 3\] | \[Tâches à définir\] | ⏳ À faire |
+| 1      | \[Membre 4\] | \[Tâches à définir\] | ⏳ À faire |
+
+
+---
+
+## Justification de l'Utilisation de l'IA
+
+### Contexte
+Le projet LenSymphony-Web est un projet SAE S3.A.01 nécessitant une stack technique complexe (Laravel, Vue.js, MusicXML, synthèse audio). L'IA à été utilisée pour accélérer certaines phases de développement cependant:
+- 
+- Chaque code généré est **revu et validé** avant intégration
+- Les décisions techniques importantes sont **prises collectivement**
+
+
+
+
 # Dictionnaire de Données - LenSymphony-Web
 
 ### User (Utilisateur)
