@@ -2,18 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="utf-8">
-    <title>@yield('title', 'LenSymphony')</title>
+    <title>{{ $title ?? 'LenSymphony' }}</title>
     @vite('resources/css/app.css')
 </head>
 <body>
 
-    <x-navbar />
+<x-navbar />
 
-    <main>
-        @yield('content')
-    </main>
+<main>
+    {{ $slot }}
+</main>
 
-    <x-footer />
+<x-footer />
 
 </body>
 </html>

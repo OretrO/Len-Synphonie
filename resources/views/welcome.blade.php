@@ -1,8 +1,5 @@
-@extends('layouts.app')
-
-@section('title', 'Home')
-
-@section('content')
+<?php ?>
+<x-layout-app title="Accueil - LenSymphony">
     <div class="page-container">
         <div class="card">
             <h1 class="card-title">Welcome to LenSymphony</h1>
@@ -42,4 +39,4 @@
             </p>
         @endif
     </div>
-@endsection
+</x-layout-app>
