@@ -18,14 +18,36 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         // 1. Création des utilisateurs avec différents rôles
+
+        // UTILISATEURS DE TEST (credentials connus pour tester les rôles)
         $admin = User::factory()->admin()->create([
             'name' => 'Admin User',
             'email' => 'admin@lensymphony.com',
+            'password' => bcrypt('password'), // Mot de passe : password
         ]);
 
-        $arrangers = User::factory()->arranger()->count(5)->create();
-        $users = User::factory()->user()->count(15)->create();
-        $visitors = User::factory()->visitor()->count(5)->create();
+        $arranger = User::factory()->arranger()->create([
+            'name' => 'Arranger Test',
+            'email' => 'arranger@lensymphony.com',
+            'password' => bcrypt('password'), // Mot de passe : password
+        ]);
+
+        $user = User::factory()->user()->create([
+            'name' => 'User Test',
+            'email' => 'user@lensymphony.com',
+            'password' => bcrypt('password'), // Mot de passe : password
+        ]);
+
+        $visitor = User::factory()->visitor()->create([
+            'name' => 'Visitor Test',
+            'email' => 'visitor@lensymphony.com',
+            'password' => bcrypt('password'), // Mot de passe : password
+        ]);
+
+        // Autres utilisateurs aléatoires
+        $arrangers = User::factory()->arranger()->count(4)->create();
+        $users = User::factory()->user()->count(14)->create();
+        $visitors = User::factory()->visitor()->count(4)->create();
 
         $allUsers = User::all();
 
@@ -48,7 +70,7 @@ class DatabaseSeeder extends Seeder
         $allInstruments = Instrument::all();
 
         // 3. Création des partitions (créées par les arrangers et l'admin)
-        $creators = $arrangers->concat([$admin]);
+        $creators = collect([$admin, $arranger])->concat($arrangers);
         $partitions = collect();
 
         foreach ($creators as $creator) {
