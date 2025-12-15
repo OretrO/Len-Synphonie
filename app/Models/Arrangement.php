@@ -4,9 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Arrangement extends Model
 {
@@ -15,14 +12,16 @@ class Arrangement extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'partition_id',
-        'name',
-        'instruments_config',
-        'audio_file_path',
-        'status',
+        'creator_id',
+        'title',
+        'description',
+        'difficulty_level',
+        'file_path',
+        'is_public',
     ];
 
     /**
@@ -33,30 +32,31 @@ class Arrangement extends Model
     protected function casts(): array
     {
         return [
-            'instruments_config' => 'array',
+            'is_public' => 'boolean',
         ];
     }
 
     /**
      * Get the partition that owns the arrangement.
      */
-    public function partition(): BelongsTo
+    public function partition()
     {
         return $this->belongsTo(Partition::class);
     }
 
     /**
-     * Get the comments for the arrangement.
+     * RELATION 1: Get the creator (user) of the arrangement (relation directe).
+     * Cardinalité: * Arrangements -> 1 User
      */
-    public function comments(): HasMany
+    public function creator()
     {
-        return $this->hasMany(Comment::class);
+        return $this->belongsTo(User::class, 'creator_id');
     }
 
     /**
-     * Get the instruments used in this arrangement.
+     * Get the instruments associated with the arrangement.
      */
-    public function instruments(): BelongsToMany
+    public function instruments()
     {
         return $this->belongsToMany(Instrument::class, 'arrangement_instruments')
             ->withPivot('track_number')
@@ -64,19 +64,47 @@ class Arrangement extends Model
     }
 
     /**
-     * Get the users associated with this arrangement via user_arrangements.
+     * Get the comments for the arrangement.
      */
-    public function users(): BelongsToMany
+    public function comments()
     {
-        return $this->belongsToMany(User::class, 'user_arrangements')
+        return $this->hasMany(Comment::class);
+    }
+
+    /**
+     * Get the appreciations for the arrangement.
+     */
+    public function appreciations()
+    {
+        return $this->hasMany(Appreciation::class);
+    }
+
+    /**
+     * RELATION 2: Get the users who appreciated this arrangement (via classe associative Appreciation).
+     * Cardinalité: * Arrangements <-> * Users (via appreciations)
+     */
+    public function appreciators()
+    {
+        return $this->belongsToMany(User::class, 'appreciations')
+            ->using(Appreciation::class)
+            ->withPivot('is_like')
             ->withTimestamps();
     }
 
     /**
-     * Get the user arrangements for this arrangement.
+     * Get the count of likes for this arrangement.
      */
-    public function userArrangements(): HasMany
+    public function likesCount()
     {
-        return $this->hasMany(UserArrangement::class);
+        return $this->appreciations()->where('is_like', true)->count();
+    }
+
+    /**
+     * Get the count of dislikes for this arrangement.
+     */
+    public function dislikesCount()
+    {
+        return $this->appreciations()->where('is_like', false)->count();
     }
 }
+

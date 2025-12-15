@@ -45,19 +45,23 @@ class User extends Authenticatable
     }
 
     /**
-     * Get the arrangements created by the user.
+     * RELATION 1: Get the arrangements created by the user (relation directe).
+     * Cardinalité: 1 User -> * Arrangements
      */
-    public function createdArrangements()
+    public function arrangements()
     {
         return $this->hasMany(Arrangement::class, 'creator_id');
     }
 
     /**
-     * Get the arrangements that the user supports.
+     * RELATION 2: Get the arrangements appreciated by the user (via classe associative Appreciation).
+     * Cardinalité: * Users <-> * Arrangements (via appreciations)
      */
-    public function supportedArrangements()
+    public function appreciatedArrangements()
     {
-        return $this->belongsToMany(Arrangement::class, 'user_arrangements')
+        return $this->belongsToMany(Arrangement::class, 'appreciations')
+            ->using(Appreciation::class)
+            ->withPivot('is_like')
             ->withTimestamps();
     }
 
@@ -75,17 +79,6 @@ class User extends Authenticatable
     public function appreciations()
     {
         return $this->hasMany(Appreciation::class);
-    }
-
-    /**
-     * Get the arrangements liked by the user.
-     */
-    public function likedArrangements()
-    {
-        return $this->belongsToMany(Arrangement::class, 'appreciations')
-            ->using(Appreciation::class)
-            ->withPivot('is_like')
-            ->withTimestamps();
     }
 }
 
