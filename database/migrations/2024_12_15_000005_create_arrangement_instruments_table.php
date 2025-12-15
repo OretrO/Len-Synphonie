@@ -12,14 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('arrangement_instruments', function (Blueprint $table) {
-            $table->id();
             $table->foreignId('arrangement_id')->constrained()->onDelete('cascade');
             $table->foreignId('instrument_id')->constrained()->onDelete('cascade');
             $table->integer('track_number');
             $table->timestamps();
 
-            // Assurer qu'un instrument ne peut être utilisé qu'une seule fois par piste dans un arrangement
-            $table->unique(['arrangement_id', 'track_number']);
+            // Clé primaire composite
+            $table->primary(['arrangement_id', 'instrument_id']);
         });
     }
 

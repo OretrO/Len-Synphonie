@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('arrangements', function (Blueprint $table) {
             $table->id();
             $table->foreignId('partition_id')->constrained()->onDelete('cascade');
+            $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
             $table->string('name');
             $table->json('instruments_config');
             $table->string('audio_file_path')->nullable();
