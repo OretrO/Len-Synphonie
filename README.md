@@ -130,3 +130,85 @@ pending, processing,
 completed, failed
 end note
 ```
+
+---
+
+## MLD (Modèle Logique de Données)
+
+```plantuml
+@startuml
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define primary_key(x) <b>x</b>
+!define foreign_key(x) <i>x</i>
+!define column(x) x
+
+hide methods
+hide stereotypes
+
+entity "users" as users {
+  primary_key(id): INTEGER
+  --
+  column(name): VARCHAR(255)
+  column(email): VARCHAR(255) UNIQUE
+  column(password): VARCHAR(255)
+  column(role): ENUM('visitor','user','arranger','admin')
+  column(created_at): TIMESTAMP
+  column(updated_at): TIMESTAMP
+}
+
+entity "partitions" as partitions {
+  primary_key(id): INTEGER
+  --
+  column(title): VARCHAR(255)
+  column(composer): VARCHAR(255) NULL
+  column(musicxml_file_path): VARCHAR(255)
+  foreign_key(user_id): INTEGER
+  column(created_at): TIMESTAMP
+  column(updated_at): TIMESTAMP
+}
+
+entity "arrangements" as arrangements {
+  primary_key(id): INTEGER
+  --
+  foreign_key(partition_id): INTEGER
+  foreign_key(user_id): INTEGER
+  column(name): VARCHAR(255)
+  column(instruments_config): JSON
+  column(audio_file_path): VARCHAR(255) NULL
+  column(status): ENUM('pending','processing','completed','failed')
+  column(created_at): TIMESTAMP
+  column(updated_at): TIMESTAMP
+}
+
+entity "comments" as comments {
+  primary_key(id): INTEGER
+  --
+  foreign_key(arrangement_id): INTEGER
+  foreign_key(user_id): INTEGER
+  column(content): TEXT
+  column(created_at): TIMESTAMP
+  column(updated_at): TIMESTAMP
+}
+
+entity "likes" as likes {
+  primary_key(id): INTEGER
+  --
+  foreign_key(arrangement_id): INTEGER
+  foreign_key(user_id): INTEGER
+  column(is_like): BOOLEAN
+  column(created_at): TIMESTAMP
+  column(updated_at): TIMESTAMP
+}
+
+users ||--o{ partitions : "user_id"
+users ||--o{ arrangements : "user_id"
+users ||--o{ comments : "user_id"
+users ||--o{ likes : "user_id"
+
+partitions ||--o{ arrangements : "partition_id"
+
+arrangements ||--o{ comments : "arrangement_id"
+arrangements ||--o{ likes : "arrangement_id"
+
+@enduml
+```
