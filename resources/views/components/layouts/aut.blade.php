@@ -1,6 +1,6 @@
-@props(['title' => 'Authentification'])
+@props(['title' => 'Authentication'])
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -16,15 +16,15 @@
                 🎵 LenSymphony
             </a>
             <nav class="flex items-center gap-4">
-                <a href="{{ route('home') }}" class="navbar-link">Accueil</a>
+                <a href="{{ route('home') }}" class="navbar-link">Home</a>
                 @guest
-                    <a href="{{ route('login') }}" class="navbar-link">Connexion</a>
-                    <a href="{{ route('register') }}" class="btn btn-primary">Inscription</a>
+                    <a href="{{ route('login') }}" class="navbar-link">Login</a>
+                    <a href="{{ route('register') }}" class="btn btn-primary">Sign Up</a>
                 @else
                     <span class="text-sm text-slate-400">{{ Auth::user()->name }}</span>
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
-                        <button type="submit" class="navbar-link text-red-400 hover:text-red-300">Déconnexion</button>
+                        <button type="submit" class="navbar-link text-red-400 hover:text-red-300">Logout</button>
                     </form>
                 @endguest
             </nav>
@@ -45,4 +45,3 @@
 
 </body>
 </html>
-

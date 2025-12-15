@@ -6,11 +6,11 @@
 
         <div class="navbar-links">
             <a href="{{ route('home') }}" class="navbar-link {{ request()->routeIs('home') ? 'bg-indigo-500/20 text-indigo-300' : '' }}">
-                Accueil
+                Home
             </a>
 
             <a href="{{ route('partitions.index') }}" class="navbar-link {{ request()->routeIs('partitions.*') ? 'bg-indigo-500/20 text-indigo-300' : '' }}">
-                Partitions
+                Scores
             </a>
 
             @auth
@@ -20,7 +20,7 @@
                         <svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                         </svg>
-                        Créer
+                        Create
                     </a>
                 @endif
 
@@ -34,10 +34,10 @@
                 </span>
 
                 {{-- Menu utilisateur --}}
-                <div class="relative group">
+                <div class="relative user-dropdown-container">
                     <a href="{{ route('profile.show') }}" class="navbar-link flex items-center gap-2">
                         @if(auth()->user()->avatar && auth()->user()->avatar !== 'avatars/default.svg')
-                            <img src="{{ Storage::url(auth()->user()->avatar) }}" alt="Avatar" class="w-6 h-6 rounded-full object-cover border border-indigo-500/50">
+                            <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="Avatar" class="w-6 h-6 rounded-full object-cover border border-indigo-500/50">
                         @else
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
@@ -47,7 +47,7 @@
                     </a>
 
                     {{-- Dropdown menu (hover) --}}
-                    <div class="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-700 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div class="absolute right-0 mt-2 w-48 bg-slate-900 border border-slate-700 rounded-lg shadow-xl z-50 user-dropdown-menu">
                         <div class="py-1">
                             <div class="px-4 py-2 text-xs text-slate-400 border-b border-slate-700">
                                 {{ auth()->user()->email }}
@@ -57,15 +57,11 @@
                                 <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                                 </svg>
-                                Mon Profil
-                            </a>
-
-                            @if(in_array(auth()->user()->role, ['arranger', 'admin']))
-                                <a href="{{ route('partitions.index') }}" class="block px-4 py-2 text-sm text-slate-300 hover:bg-slate-800 transition-colors">
+                                    My Profile
                                     <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                                     </svg>
-                                    Mes Partitions
+                                    My Scores
                                 </a>
                             @endif
 
@@ -75,19 +71,19 @@
                                     <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
                                     </svg>
-                                    Déconnexion
+                                    Logout
                                 </button>
                             </form>
                         </div>
                     </div>
                 </div>
             @else
-                {{-- Menu pour les visiteurs non connectés --}}
+                {{-- Menu for guest users --}}
                 <a href="{{ route('login') }}" class="navbar-link">
-                    Connexion
+                    Login
                 </a>
                 <a href="{{ route('register') }}" class="btn btn-primary text-xs px-4 py-2">
-                    Inscription
+                    Sign Up
                 </a>
             @endauth
         </div>

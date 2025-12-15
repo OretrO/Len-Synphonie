@@ -1,4 +1,4 @@
-<x-layouts.aut title="Réinitialiser le mot de passe">
+<x-layouts.aut title="Reset Password">
     <x-auth.card>
         <x-slot name="header">
             <div class="text-center mb-6">
@@ -7,8 +7,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
                 </div>
-                <h1 class="auth-title text-2xl">Nouveau mot de passe</h1>
-                <p class="auth-subtitle mt-2">Choisissez un mot de passe sécurisé</p>
+                <h1 class="auth-title text-2xl">New password</h1>
+                <p class="auth-subtitle mt-2">Choose a secure password</p>
             </div>
         </x-slot>
 
@@ -18,7 +18,7 @@
 
             <!-- Email -->
             <div class="form-group">
-                <label for="email" class="form-label">Adresse e-mail</label>
+                <label for="email" class="form-label">Email address</label>
                 <div class="input-icon-wrapper">
                     <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -28,22 +28,22 @@
                 @error('email') <p class="form-error">{{ $message }}</p> @enderror
             </div>
 
-            <!-- Nouveau mot de passe -->
+            <!-- New password -->
             <div class="form-group">
-                <label for="password" class="form-label">Nouveau mot de passe</label>
+                <label for="password" class="form-label">New password</label>
                 <div class="input-icon-wrapper">
                     <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                     <input type="password" id="password" name="password" class="form-input" required autocomplete="new-password" placeholder="••••••••">
                 </div>
-                <p class="form-hint">Min. 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre</p>
+                <p class="form-hint">Min. 8 characters, 1 uppercase, 1 lowercase, 1 number</p>
                 @error('password') <p class="form-error">{{ $message }}</p> @enderror
             </div>
 
             <!-- Confirmation -->
             <div class="form-group">
-                <label for="password_confirmation" class="form-label">Confirmer le mot de passe</label>
+                <label for="password_confirmation" class="form-label">Confirm password</label>
                 <div class="input-icon-wrapper">
                     <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
@@ -56,8 +56,8 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                 </svg>
-                Réinitialiser le mot de passe
-            </button>
+                Reset Password
+            </button
         </form>
     </x-auth.card>
 </x-layouts.aut>

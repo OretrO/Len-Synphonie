@@ -12,10 +12,10 @@
             <!-- Liens -->
             <nav class="flex items-center gap-6">
                 <a href="{{ route('home') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                    Accueil
+                    Home
                 </a>
                 <a href="{{ route('about') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                    À propos
+                    About
                 </a>
                 <a href="{{ route('contact') }}" class="text-sm text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                     Contact
@@ -24,7 +24,7 @@
 
             <!-- Copyright -->
             <p class="text-sm text-gray-600 dark:text-gray-400">
-                &copy; {{ date('Y') }} LenSymphony. Tous droits réservés.
+                &copy; {{ date('Y') }} LenSymphony. All rights reserved.
             </p>
         </div>
 

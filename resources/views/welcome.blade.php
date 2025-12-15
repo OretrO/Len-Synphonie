@@ -1,160 +1,228 @@
-<x-layouts.app title="Accueil - LenSymphony">
-    <div class="page-container">
-        {{-- Hero Section avec message personnalisé --}}
-        <div class="card bg-gradient-to-br from-indigo-900/40 to-purple-900/30 border-indigo-500/30">
-            @guest
-                <h1 class="card-title text-3xl">
-                    Bienvenue sur LenSymphony 🎵
-                </h1>
-
-                <p class="card-text">
-                    LenSymphony est une plateforme web permettant de gérer, organiser et visualiser
-                    des partitions musicales au format MusicXML. Créez vos arrangements, partagez vos
-                    créations et explorez les partitions de la communauté.
-                </p>
-
-                <p class="card-text text-slate-400">
-                    Connectez-vous pour accéder aux partitions et découvrir toutes les fonctionnalités.
-                </p>
-
-                <div class="card-actions">
-                    <a href="{{ route('register') }}" class="btn btn-primary btn-large">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                        </svg>
-                        Créer un compte
-                    </a>
-                    <a href="{{ route('login') }}" class="btn btn-outline btn-large">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
-                        </svg>
-                        Se connecter
-                    </a>
-                </div>
-            @else
-                <h1 class="card-title text-3xl">
-                    Bonjour, {{ auth()->user()->name }} !
-                </h1>
-
-                <p class="card-text">
-                    @if(auth()->user()->role === 'admin')
-                        En tant qu'<strong class="text-purple-400">Administrateur</strong>, vous avez accès à toutes les fonctionnalités de la plateforme.
-                    @elseif(auth()->user()->role === 'arranger')
-                        En tant qu'<strong class="text-indigo-400">Arrangeur</strong>, vous pouvez créer et gérer vos partitions et arrangements.
-                    @elseif(auth()->user()->role === 'user')
-                        En tant qu'<strong class="text-blue-400">Utilisateur</strong>, vous pouvez consulter les partitions et laisser des commentaires.
-                    @else
-                        Bienvenue sur LenSymphony ! Explorez les partitions disponibles.
-                    @endif
-                </p>
-
-                <div class="card-actions">
-                    @if(in_array(auth()->user()->role, ['arranger', 'admin']))
-                        <a href="{{ route('partitions.create') }}" class="btn btn-primary">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                            </svg>
-                            Créer une partition
-                        </a>
-                    @endif
-                    <a href="{{ route('partitions.index') }}" class="btn btn-outline">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                        </svg>
-                        Toutes les partitions
-                    </a>
-                </div>
-            @endguest
+<x-layouts.app title="LenSymphony - Music Sharing Platform">
+    <div class="homepage-spotify">
+        {{-- Fond animé avec barres audio --}}
+        <div class="audio-visualizer">
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
+            <div class="audio-bar"></div>
         </div>
 
-        {{-- Section Partitions Récentes --}}
-        @if(isset($partitions) && $partitions->count())
-            <div class="home-section-header">
-                <h2 class="home-section-title">Partitions récentes</h2>
-                <p class="home-section-sub">
-                    Découvrez les dernières partitions ajoutées à la plateforme.
-                </p>
-            </div>
+        {{-- Icônes musicales flottantes en fond --}}
+        <div class="floating-music-icons">
+            <svg class="music-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+            </svg>
+            <svg class="music-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+            <svg class="music-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+            </svg>
+            <svg class="music-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+            <svg class="music-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+            </svg>
+            <svg class="music-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+            <svg class="music-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+            </svg>
+            <svg class="music-icon" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+        </div>
 
-            <div class="partition-grid">
-                @foreach($partitions as $partition)
-                    <x-card-partition :partition="$partition" />
-                @endforeach
-            </div>
-
-            {{-- Bouton voir plus --}}
-            @if($partitions->count() >= 6)
-                <div class="flex justify-center mt-8">
-                    <a href="{{ route('partitions.index') }}" class="btn btn-outline">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                        Voir toutes les partitions
-                    </a>
-                </div>
-            @endif
-        @else
-            <div class="home-section-header">
-                <h2 class="home-section-title">Partitions</h2>
-            </div>
-
-            <div class="card text-center py-12">
-                <svg class="w-16 h-16 mx-auto mb-4 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                </svg>
-                <p class="text-lg text-slate-400 mb-4">Aucune partition disponible pour le moment.</p>
-
-                @auth
-                    @if(in_array(auth()->user()->role, ['arranger', 'admin']))
-                        <a href="{{ route('partitions.create') }}" class="btn btn-primary">
-                            Créer la première partition
+        {{-- Hero Section avec glassmorphism --}}
+        <section class="spotify-hero">
+            <div class="spotify-hero-background"></div>
+            <div class="spotify-hero-content">
+                @guest
+                    <h1 class="spotify-hero-title">Welcome to LenSymphony</h1>
+                    <p class="spotify-hero-subtitle">Discover, create and share your sheet music</p>
+                    <div class="spotify-hero-actions">
+                        <a href="{{ route('register') }}" class="spotify-btn spotify-btn-primary">
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z"/>
+                            </svg>
+                            Get started for free
                         </a>
-                    @else
-                        <p class="text-sm text-slate-500">Les arrangers peuvent créer des partitions.</p>
-                    @endif
+                        <a href="{{ route('login') }}" class="spotify-btn spotify-btn-secondary">
+                            Log in
+                        </a>
+                    </div>
                 @else
-                    <a href="{{ route('register') }}" class="btn btn-primary">
-                        Créer un compte pour commencer
-                    </a>
+                    <h1 class="spotify-hero-title">Hello, {{ auth()->user()->name }}</h1>
+                    <p class="spotify-hero-subtitle">
+                        @if(auth()->user()->role === 'admin')
+                            Manage your music platform
+                        @elseif(auth()->user()->role === 'arranger')
+                            Create and share your compositions
+                        @else
+                            Explore the music library
+                        @endif
+                    </p>
+                    @if(in_array(auth()->user()->role, ['arranger', 'admin']))
+                        <div class="spotify-hero-actions">
+                            <a href="{{ route('partitions.create') }}" class="spotify-btn spotify-btn-primary">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                                </svg>
+                                Create Score
+                            </a>
+                            <a href="{{ route('partitions.index') }}" class="spotify-btn spotify-btn-secondary">
+                                View Library
+                            </a>
+                        </div>
+                    @endif
                 @endauth
             </div>
+        </section>
+
+        {{-- Stats avec glassmorphism et animations --}}
+        <section class="spotify-stats-section">
+            <div class="spotify-stats-grid">
+                <div class="spotify-stat-card">
+                    <div class="spotify-stat-icon">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                        </svg>
+                    </div>
+                    <div class="spotify-stat-content">
+                        <div class="spotify-stat-number">{{ \App\Models\Partition::count() }}</div>
+                        <div class="spotify-stat-label">Scores</div>
+                    </div>
+                </div>
+                <div class="spotify-stat-card">
+                    <div class="spotify-stat-icon">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                        </svg>
+                    </div>
+                    <div class="spotify-stat-content">
+                        <div class="spotify-stat-number">{{ \App\Models\Arrangement::count() }}</div>
+                        <div class="spotify-stat-label">Arrangements</div>
+                    </div>
+                </div>
+                <div class="spotify-stat-card">
+                    <div class="spotify-stat-icon">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M16 7c0-2.21-1.79-4-4-4S8 4.79 8 7s1.79 4 4 4 4-1.79 4-4zm-4 7c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                    </div>
+                    <div class="spotify-stat-content">
+                        <div class="spotify-stat-number">{{ \App\Models\User::count() }}</div>
+                        <div class="spotify-stat-label">Musicians</div>
+                    </div>
+                </div>
+                <div class="spotify-stat-card">
+                    <div class="spotify-stat-icon">
+                        <svg fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+                        </svg>
+                    </div>
+                    <div class="spotify-stat-content">
+                        <div class="spotify-stat-number">{{ \App\Models\Instrument::count() }}</div>
+                        <div class="spotify-stat-label">Instruments</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- Section Partitions récentes --}}
+        @if(isset($partitions) && $partitions->count() > 0)
+            <section class="spotify-content-section">
+                <div class="spotify-section-header">
+                    <h2 class="spotify-section-title">Recent Scores</h2>
+                    <a href="{{ route('partitions.index') }}" class="spotify-section-link">
+                        View All
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
+                        </svg>
+                    </a>
+                </div>
+                <div class="spotify-grid">
+                    @foreach($partitions->take(6) as $partition)
+                        <x-card-partition :partition="$partition" />
+                    @endforeach
+                </div>
+            </section>
+        @else
+            <section class="spotify-content-section">
+                <div class="spotify-empty-state">
+                    <svg class="spotify-empty-icon" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                    </svg>
+                    <h3 class="spotify-empty-title">No scores available</h3>
+                    <p class="spotify-empty-text">Start by creating your first score</p>
+                    @auth
+                        @if(in_array(auth()->user()->role, ['arranger', 'admin']))
+                            <a href="{{ route('partitions.create') }}" class="spotify-btn spotify-btn-primary">
+                                Create a score
+                            </a>
+                        @endif
+                    @else
+                        <a href="{{ route('register') }}" class="spotify-btn spotify-btn-primary">
+                            Sign up
+                        </a>
+                    @endauth
+                </div>
+            </section>
         @endif
 
-        {{-- Section Statistiques (visible seulement pour les connectés) --}}
-        @auth
-            <div class="home-section-header">
-                <h2 class="home-section-title">Statistiques</h2>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="card text-center">
-                    <div class="text-4xl font-bold text-indigo-400 mb-2">
-                        {{ \App\Models\Partition::count() }}
+        {{-- Section Features pour les visiteurs --}}
+        @guest
+            <section class="spotify-features-section">
+                <h2 class="spotify-features-title">Why choose LenSymphony?</h2>
+                <div class="spotify-features-grid">
+                    <div class="spotify-feature-card">
+                        <div class="spotify-feature-icon">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"/>
+                            </svg>
+                        </div>
+                        <h3 class="spotify-feature-title">Rich library</h3>
+                        <p class="spotify-feature-text">Access thousands of sheet music across genres and styles.</p>
                     </div>
-                    <div class="text-sm text-slate-400">Partitions</div>
-                </div>
-
-                <div class="card text-center">
-                    <div class="text-4xl font-bold text-purple-400 mb-2">
-                        {{ \App\Models\Arrangement::count() }}
+                    <div class="spotify-feature-card">
+                        <div class="spotify-feature-icon">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="spotify-feature-title">Easy creation</h3>
+                        <p class="spotify-feature-text">Create your own scores with intuitive and powerful tools.</p>
                     </div>
-                    <div class="text-sm text-slate-400">Arrangements</div>
-                </div>
-
-                <div class="card text-center">
-                    <div class="text-4xl font-bold text-blue-400 mb-2">
-                        {{ \App\Models\User::count() }}
+                    <div class="spotify-feature-card">
+                        <div class="spotify-feature-icon">
+                            <svg fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M16 7c0-2.21-1.79-4-4-4S8 4.79 8 7s1.79 4 4 4 4-1.79 4-4zm-4 7c-2.67 0-8 1.34-8 4v3h16v-3c0-2.66-5.33-4-8-4z"/>
+                            </svg>
+                        </div>
+                        <h3 class="spotify-feature-title">Active community</h3>
+                        <p class="spotify-feature-text">Join a community of passionate musicians and share your creations.</p>
                     </div>
-                    <div class="text-sm text-slate-400">Utilisateurs</div>
                 </div>
-
-                <div class="card text-center">
-                    <div class="text-4xl font-bold text-emerald-400 mb-2">
-                        {{ \App\Models\Instrument::count() }}
-                    </div>
-                    <div class="text-sm text-slate-400">Instruments</div>
-                </div>
-            </div>
-        @endauth
+            </section>
+        @endguest
     </div>
 </x-layouts.app>

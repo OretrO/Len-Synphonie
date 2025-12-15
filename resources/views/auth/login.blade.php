@@ -1,14 +1,14 @@
-<x-layouts.aut title="Connexion">
+<x-layouts.aut title="Log In">
     <x-auth.card>
         <x-slot name="header">
             <div class="flex items-center justify-between mb-6">
                 <div>
-                    <h1 class="auth-title text-2xl">Connexion</h1>
-                    <p class="auth-subtitle mt-1">Connectez-vous pour continuer</p>
+                    <h1 class="auth-title text-2xl">Log In</h1>
+                    <p class="auth-subtitle mt-1">Sign in to continue</p>
                 </div>
-                <a href="{{ route('register') }}" class="btn btn-outline text-sm">Créer un compte</a>
+                <a href="{{ route('register') }}" class="btn btn-outline text-sm">Sign Up</a>
             </div>
-            <div class="auth-divider"><span>ou</span></div>
+            <div class="auth-divider"><span>or</span></div>
         </x-slot>
 
         <!-- Form -->
@@ -17,7 +17,7 @@
 
             <!-- Email -->
             <div class="form-group">
-                <label for="email" class="form-label">Adresse e-mail</label>
+                <label for="email" class="form-label">Email address</label>
                 <div class="input-icon-wrapper">
                     <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -39,7 +39,7 @@
 
             <!-- Password -->
             <div class="form-group">
-                <label for="password" class="form-label">Mot de passe</label>
+                <label for="password" class="form-label">Password</label>
                 <div class="input-icon-wrapper">
                     <svg class="input-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
@@ -53,7 +53,7 @@
                         placeholder="••••••••"
                         class="form-input"
                     />
-                    <button type="button" id="togglePassword" class="password-toggle" aria-label="Afficher le mot de passe">
+                    <button type="button" id="togglePassword" class="password-toggle" aria-label="Show password">
                         <svg id="eyeOpen" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -70,10 +70,10 @@
             <div class="flex items-center justify-between">
                 <label class="checkbox-wrapper">
                     <input type="checkbox" name="remember" class="checkbox-custom" {{ old('remember') ? 'checked' : '' }}>
-                    <span class="checkbox-label">Rester connecté</span>
+                    <span class="checkbox-label">Remember me</span>
                 </label>
 
-                <a href="{{ route('password.request') }}" class="auth-link">Mot de passe oublié ?</a>
+                <a href="{{ route('password.request') }}" class="auth-link">Forgot password?</a>
             </div>
 
             <!-- Submit -->
@@ -81,12 +81,12 @@
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
                 </svg>
-                Se connecter
+                Log in
             </button>
 
             <!-- Hint -->
             <p class="text-xs text-center text-slate-500 mt-4">
-                En vous connectant, vous acceptez les conditions d'utilisation de LenSymphony.
+                By signing in, you agree to LenSymphony's terms of service.
             </p>
         </form>
 

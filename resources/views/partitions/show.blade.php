@@ -9,12 +9,12 @@
                 @if(auth()->user()->id === $partition->user_id || auth()->user()->role === 'admin')
                     <div class="partition-actions">
                         <a href="{{ route('partitions.edit', $partition) }}" class="btn btn-outline">
-                            Modifier
+                            Edit
                         </a>
-                        <form action="{{ route('partitions.destroy', $partition) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette partition ?');">
+                        <form action="{{ route('partitions.destroy', $partition) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this score?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                            <button type="submit" class="btn btn-danger">Delete</button>
                         </form>
                     </div>
                 @endif
@@ -24,16 +24,16 @@
         <div class="partition-info">
             @if($partition->composer)
                 <p class="partition-composer">
-                    <strong>Compositeur :</strong> {{ $partition->composer }}
+                    <strong>Composer:</strong> {{ $partition->composer }}
                 </p>
             @endif
 
             <p class="partition-meta">
-                <strong>Créée par :</strong> {{ $partition->user->name }}
+                <strong>Created by:</strong> {{ $partition->user->name }}
             </p>
 
             <p class="partition-meta">
-                <strong>Date :</strong> {{ $partition->created_at->format('d/m/Y') }}
+                <strong>Date:</strong> {{ $partition->created_at->format('d/m/Y') }}
             </p>
         </div>
 
@@ -45,17 +45,17 @@
                     @foreach($partition->arrangements as $arrangement)
                         <div class="arrangement-card">
                             <h3>{{ $arrangement->name }}</h3>
-                            <p><strong>Statut :</strong> {{ $arrangement->status }}</p>
-                            <p><strong>Créé le :</strong> {{ $arrangement->created_at->format('d/m/Y') }}</p>
+                            <p><strong>Status:</strong> {{ $arrangement->status }}</p>
+                            <p><strong>Created on:</strong> {{ $arrangement->created_at->format('d/m/Y') }}</p>
                         </div>
                     @endforeach
                 </div>
             @else
-                <p class="empty-text">Aucun arrangement pour cette partition.</p>
+                <p class="empty-text">No arrangements for this score.</p>
             @endif
         </div>
 
-        <a href="{{ route('partitions.index') }}" class="btn btn-outline">← Retour à la liste</a>
+        <a href="{{ route('partitions.index') }}" class="btn btn-outline">← Back to list</a>
     </div>
 
     <style>
