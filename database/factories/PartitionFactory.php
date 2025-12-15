@@ -29,7 +29,7 @@ class PartitionFactory extends Factory
             'title' => fake()->sentence(3),
             'composer' => fake()->optional(0.8)->name(),
             'musicxml_file_path' => 'partitions/' . fake()->uuid() . '.musicxml',
-            'user_id' => User::factory(),
+            // user_id will be set in the seeder
         ];
     }
 

@@ -39,11 +39,11 @@ class ArrangementFactory extends Factory
         }
 
         return [
-            'partition_id' => Partition::factory(),
             'name' => fake()->words(3, true),
             'instruments_config' => $instrumentsConfig,
             'audio_file_path' => null,
             'status' => fake()->randomElement(['pending', 'processing', 'completed', 'failed']),
+            // partition_id and creator_id will be set in the seeder
         ];
     }
 
