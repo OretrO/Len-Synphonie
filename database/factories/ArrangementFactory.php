@@ -40,7 +40,6 @@ class ArrangementFactory extends Factory
 
         return [
             'partition_id' => Partition::factory(),
-            'user_id' => User::factory(),
             'name' => fake()->words(3, true),
             'instruments_config' => $instrumentsConfig,
             'audio_file_path' => null,

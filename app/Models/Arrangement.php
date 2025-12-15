@@ -4,6 +4,9 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Arrangement extends Model
 {
@@ -12,16 +15,14 @@ class Arrangement extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var array<int, string>
+     * @var list<string>
      */
     protected $fillable = [
         'partition_id',
-        'creator_id',
-        'title',
-        'description',
-        'difficulty_level',
-        'file_path',
-        'is_public',
+        'name',
+        'instruments_config',
+        'audio_file_path',
+        'status',
     ];
 
     /**
@@ -32,30 +33,30 @@ class Arrangement extends Model
     protected function casts(): array
     {
         return [
-            'is_public' => 'boolean',
+            'instruments_config' => 'array',
         ];
     }
 
     /**
      * Get the partition that owns the arrangement.
      */
-    public function partition()
+    public function partition(): BelongsTo
     {
         return $this->belongsTo(Partition::class);
     }
 
     /**
-     * Get the creator (user) of the arrangement.
+     * Get the comments for the arrangement.
      */
-    public function creator()
+    public function comments(): HasMany
     {
-        return $this->belongsTo(User::class, 'creator_id');
+        return $this->hasMany(Comment::class);
     }
 
     /**
-     * Get the instruments associated with the arrangement.
+     * Get the instruments used in this arrangement.
      */
-    public function instruments()
+    public function instruments(): BelongsToMany
     {
         return $this->belongsToMany(Instrument::class, 'arrangement_instruments')
             ->withPivot('track_number')
@@ -63,63 +64,19 @@ class Arrangement extends Model
     }
 
     /**
-     * Get the users supporting this arrangement.
+     * Get the users associated with this arrangement via user_arrangements.
      */
-    public function supporters()
+    public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'user_arrangements')
             ->withTimestamps();
     }
 
     /**
-     * Get the comments for the arrangement.
+     * Get the user arrangements for this arrangement.
      */
-    public function comments()
+    public function userArrangements(): HasMany
     {
-        return $this->hasMany(Comment::class);
-    }
-
-    /**
-     * Get the likes for the arrangement.
-     */
-    public function likes()
-    {
-        return $this->hasMany(Like::class);
-    }
-
-    /**
-     * Get the appreciations for the arrangement.
-     */
-    public function appreciations()
-    {
-        return $this->hasMany(Appreciation::class);
-    }
-
-    /**
-     * Get the users who liked/disliked this arrangement.
-     */
-    public function appreciators()
-    {
-        return $this->belongsToMany(User::class, 'appreciations')
-            ->using(Appreciation::class)
-            ->withPivot('is_like')
-            ->withTimestamps();
-    }
-
-    /**
-     * Get the count of likes for this arrangement.
-     */
-    public function likesCount()
-    {
-        return $this->appreciations()->where('is_like', true)->count();
-    }
-
-    /**
-     * Get the count of dislikes for this arrangement.
-     */
-    public function dislikesCount()
-    {
-        return $this->appreciations()->where('is_like', false)->count();
+        return $this->hasMany(UserArrangement::class);
     }
 }
-
