@@ -1,4 +1,4 @@
-@props(['partition'])
+@props(['partition' => $partition])
 
 <div class="partition-card">
     <div class="partition-card-header">

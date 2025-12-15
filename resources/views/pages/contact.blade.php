@@ -1,8 +1,4 @@
-@extends('layouts.app')
-
-@section('title', 'Contact')
-
-@section('content')
+<x-layouts.app title="Contact - LenSymphony">
     <div class="page-container">
         <div class="card">
             <h1 class="card-title">Contact</h1>
@@ -31,5 +27,4 @@
             </form>
         </div>
     </div>
-@endsection
-
+</x-layouts.app>
