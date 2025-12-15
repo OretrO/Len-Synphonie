@@ -1,25 +1,19 @@
-<!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<!doctype html>
+<html lang="fr">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ $title ?? 'LenSymphony' }}</title>
-
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <title>@yield('title', 'LenSymphony')</title>
+    @vite('resources/css/app.css')
 </head>
-<body class="font-sans antialiased bg-gray-50 min-h-screen flex flex-col">
+<body>
 
-<x-navbar />
+    <x-navbar />
 
-@if (isset($header))
-    <x-header :title="$header" />
-@endif
+    <main>
+        @yield('content')
+    </main>
 
-<main class="flex-grow container mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    {{ $slot }}
-</main>
-
-<x-footer />
+    <x-footer />
 
 </body>
 </html>
