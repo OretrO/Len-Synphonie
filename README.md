@@ -94,6 +94,15 @@ class Arrangement {
   - updated_at: Timestamp
 }
 
+class Instrument {
+  - id: Integer {PK}
+  - name: String
+  - category: String
+  - soundfont_file_path: String
+  - created_at: Timestamp
+  - updated_at: Timestamp
+}
+
 class Comment {
   - id: Integer {PK}
   - arrangement_id: Integer {FK}
@@ -121,6 +130,7 @@ Partition "1" -- "0..*" Arrangement
 
 Arrangement "1" -- "0..*" Comment
 Arrangement "1" -- "0..*" Like
+Arrangement "0..*" -- "0..*" Instrument
 ```
 
 ---
