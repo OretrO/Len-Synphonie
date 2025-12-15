@@ -1,20 +1,20 @@
 @props(['title' => 'Page'])
 <!doctype html>
-<html lang="en">
+<html lang="fr">
 <head>
     <meta charset="utf-8">
-    <title>{{ $title ?? 'LenSymphony' }}</title>
+    <title>@yield('title', 'LenSymphony')</title>
     @vite('resources/css/app.css')
 </head>
 <body>
 
-<x-navbar />
+@include('components.navbar')
 
 <main>
-    {{ $slot }}
+    @yield('content')
 </main>
 
-<x-footer />
+@include('components.footer')
 
 </body>
 </html>
