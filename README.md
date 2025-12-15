@@ -106,12 +106,13 @@ class Comment {
 class Utilise {
   - track_number: Integer
 }
+(Arrangement, Instrument) .. (Utilise) : "0..* .. 1"
 
 class Appreciation {
   - is_like: Boolean
   - created_at: Timestamp
 }
-
+(User, Arrangement) .. (Appreciation) : "0..* .. 0..*"
 User "1" -- "0..*" Partition
 User "**" -- "0..*" Arrangement
 User "1" -- "0..*" Comment
