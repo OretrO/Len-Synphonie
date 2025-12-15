@@ -103,10 +103,6 @@ class Comment {
   - updated_at: Timestamp
 }
 
-class Like {
-  - created_at: Timestamp
-}
-
 class Utilise {
   - track_number: Integer
 }
@@ -127,8 +123,7 @@ Arrangement "0..*" .. "0..*" Utilise
 Utilise "0..*" .. "1" Instrument
 
 User "0..*" .. "0..*" Appreciation
-Appreciation "0..*" .. "1" Like
-Like "0..*" -- "1" Arrangement
+Appreciation "0..*" .. "1" Arrangement
 ```
 
 ---
@@ -201,18 +196,11 @@ entity "comments" as comments {
   updated_at: TIMESTAMP
 }
 
-entity "likes" as likes {
-  <b>id</b>: INTEGER
-  --
-  <i>arrangement_id</i>: INTEGER
-  created_at: TIMESTAMP
-}
-
 entity "appreciations" as appreciations {
   <b>id</b>: INTEGER
   --
   <i>user_id</i>: INTEGER
-  <i>like_id</i>: INTEGER
+  <i>arrangement_id</i>: INTEGER
   is_like: BOOLEAN
   created_at: TIMESTAMP
 }
@@ -234,10 +222,8 @@ partitions ||--o{ arrangements : "partition_id"
 
 arrangements ||--o{ arrangement_instruments : "arrangement_id"
 arrangements ||--o{ comments : "arrangement_id"
-arrangements ||--o{ likes : "arrangement_id"
+arrangements ||--o{ appreciations : "arrangement_id"
 arrangements ||--o{ user_arrangements : "arrangement_id"
 
 instruments ||--o{ arrangement_instruments : "instrument_id"
-
-likes ||--o{ appreciations : "like_id"
 ```
