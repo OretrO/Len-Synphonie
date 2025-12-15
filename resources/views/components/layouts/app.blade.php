@@ -11,7 +11,7 @@
 @include('components.navbar')
 
 <main>
-    @yield('content')
+    {{ $slot }}
 </main>
 
 @include('components.footer')
