@@ -19,6 +19,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -51,6 +52,15 @@ class User extends Authenticatable
     public function arrangements()
     {
         return $this->hasMany(Arrangement::class, 'creator_id');
+    }
+
+    /**
+     * Get the partitions created by the user.
+     * Cardinalité: 1 User -> * Partitions
+     */
+    public function partitions()
+    {
+        return $this->hasMany(Partition::class);
     }
 
     /**

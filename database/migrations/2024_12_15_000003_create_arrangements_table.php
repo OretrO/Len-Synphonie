@@ -15,11 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('partition_id')->constrained()->onDelete('cascade');
             $table->foreignId('creator_id')->constrained('users')->onDelete('cascade');
-            $table->string('title');
-            $table->text('description')->nullable();
-            $table->string('difficulty_level')->nullable();
-            $table->string('file_path');
-            $table->boolean('is_public')->default(false);
+            $table->string('name');
+            $table->json('instruments_config');
+            $table->string('audio_file_path')->nullable();
+            $table->enum('status', ['pending', 'processing', 'completed', 'failed'])->default('pending');
             $table->timestamps();
         });
     }

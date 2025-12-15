@@ -17,11 +17,10 @@ class Arrangement extends Model
     protected $fillable = [
         'partition_id',
         'creator_id',
-        'title',
-        'description',
-        'difficulty_level',
-        'file_path',
-        'is_public',
+        'name',
+        'instruments_config',
+        'audio_file_path',
+        'status',
     ];
 
     /**
@@ -32,7 +31,7 @@ class Arrangement extends Model
     protected function casts(): array
     {
         return [
-            'is_public' => 'boolean',
+            'instruments_config' => 'array',
         ];
     }
 

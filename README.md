@@ -41,6 +41,7 @@ Le projet LenSymphony-Web est un projet SAE S3.A.01 nécessitant une stack techn
 | title | String | Titre de la partition | Required, Max: 255 |
 | composer | String | Compositeur | Nullable, Max: 255 |
 | musicxml_file_path | String | Chemin du fichier MusicXML | Required |
+| musicpdf_file_path | String | Chemin du fichier PDF | Nullable |
 | user_id | Integer | Créateur de la partition | FK → User.id |
 | created_at | Timestamp | Date d'import | Auto |
 | updated_at | Timestamp | Date de modification | Auto |
@@ -121,6 +122,7 @@ class User {
 class Partition {
   - title: String
   - composer: String
+  - musicpdf_file_path: String
   - musicxml_file_path: String
   - created_at: Timestamp
   - updated_at: Timestamp
@@ -192,6 +194,7 @@ entity "partitions" as partitions {
   --
   title: VARCHAR(255)
   composer: VARCHAR(255) NULL
+  musicpdf_file_path: VARCHAR(255) NULL
   musicxml_file_path: VARCHAR(255)
   <i>user_id</i>: INTEGER
   created_at: TIMESTAMP
