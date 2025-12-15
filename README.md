@@ -56,3 +56,78 @@
 | updated_at | Timestamp | Date de modification | Auto |
 
 ---
+
+@startuml
+skinparam classAttributeIconSize 0
+
+class User {
+- id: Integer {PK}
+- name: String
+- email: String {unique}
+- password: String
+- role: Enum
+- created_at: Timestamp
+- updated_at: Timestamp
+  }
+
+class Partition {
+- id: Integer {PK}
+- title: String
+- composer: String
+- musicxml_file_path: String
+- user_id: Integer {FK}
+- created_at: Timestamp
+- updated_at: Timestamp
+  }
+
+class Arrangement {
+- id: Integer {PK}
+- partition_id: Integer {FK}
+- user_id: Integer {FK}
+- name: String
+- instruments_config: JSON
+- audio_file_path: String
+- status: Enum
+- created_at: Timestamp
+- updated_at: Timestamp
+  }
+
+class Comment {
+- id: Integer {PK}
+- arrangement_id: Integer {FK}
+- user_id: Integer {FK}
+- content: Text
+- created_at: Timestamp
+- updated_at: Timestamp
+  }
+
+class Like {
+- id: Integer {PK}
+- arrangement_id: Integer {FK}
+- user_id: Integer {FK}
+- is_like: Boolean
+- created_at: Timestamp
+- updated_at: Timestamp
+  }
+
+User "1" -- "0..*" Partition : crée >
+User "1" -- "0..*" Arrangement : crée >
+User "1" -- "0..*" Comment : rédige >
+User "1" -- "0..*" Like : émet >
+
+Partition "1" -- "0..*" Arrangement : génère >
+
+Arrangement "1" -- "0..*" Comment : reçoit >
+Arrangement "1" -- "0..*" Like : reçoit >
+
+note right of User::role
+visitor, user,
+arranger, admin
+end note
+
+note right of Arrangement::status
+pending, processing,
+completed, failed
+end note
+
+@enduml
