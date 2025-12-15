@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Comment extends Model
 {
@@ -13,28 +12,28 @@ class Comment extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
-        'arrangement_id',
         'user_id',
+        'arrangement_id',
         'content',
     ];
 
     /**
-     * Get the arrangement that owns the comment.
+     * Get the user who wrote the comment.
      */
-    public function arrangement(): BelongsTo
+    public function user()
     {
-        return $this->belongsTo(Arrangement::class);
+        return $this->belongsTo(User::class);
     }
 
     /**
-     * Get the user that created the comment.
+     * Get the arrangement that the comment belongs to.
      */
-    public function user(): BelongsTo
+    public function arrangement()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Arrangement::class);
     }
 }
 
