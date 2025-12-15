@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('likes', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('arrangement_id')->constrained()->onDelete('cascade');
-            $table->timestamps();
-        });
+        // Cette migration est obsolète - la table likes est remplacée par appreciations
+        // Aucune table à créer ici
     }
 
     /**
@@ -23,7 +20,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('likes');
+        // Aucune table à supprimer
     }
 };
 
