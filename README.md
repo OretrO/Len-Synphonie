@@ -61,9 +61,9 @@
 
 ```plantuml
 skinparam classAttributeIconSize 0
+hide empty members
 
 class User {
-  - id: Integer {PK}
   - name: String
   - email: String {unique}
   - password: String
@@ -73,19 +73,14 @@ class User {
 }
 
 class Partition {
-  - id: Integer {PK}
   - title: String
   - composer: String
   - musicxml_file_path: String
-  - user_id: Integer {FK}
   - created_at: Timestamp
   - updated_at: Timestamp
 }
 
 class Arrangement {
-  - id: Integer {PK}
-  - partition_id: Integer {FK}
-  - user_id: Integer {FK}
   - name: String
   - instruments_config: JSON
   - audio_file_path: String
@@ -95,7 +90,6 @@ class Arrangement {
 }
 
 class Instrument {
-  - id: Integer {PK}
   - name: String
   - category: String
   - soundfont_file_path: String
@@ -104,33 +98,32 @@ class Instrument {
 }
 
 class Comment {
-  - id: Integer {PK}
-  - arrangement_id: Integer {FK}
-  - user_id: Integer {FK}
   - content: Text
   - created_at: Timestamp
   - updated_at: Timestamp
 }
 
-class Like {
-  - id: Integer {PK}
-  - arrangement_id: Integer {FK}
-  - user_id: Integer {FK}
+class Utilise {
+  - track_number: Integer
+}
+
+class Appreciation {
   - is_like: Boolean
   - created_at: Timestamp
-  - updated_at: Timestamp
 }
 
 User "1" -- "0..*" Partition
-User "1" -- "0..*" Arrangement
+User "**" -- "0..*" Arrangement
 User "1" -- "0..*" Comment
-User "1" -- "0..*" Like
+User "1" -- "0..*" Appreciation
 
 Partition "1" -- "0..*" Arrangement
 
 Arrangement "1" -- "0..*" Comment
-Arrangement "1" -- "0..*" Like
-Arrangement "0..*" -- "0..*" Instrument
+Arrangement "0..*" -- "0..*" Utilise
+Utilise "0..*" -- "1" Instrument
+
+Arrangement "0..*" -- "0..*" Appreciation
 ```
 
 ---
@@ -139,78 +132,101 @@ Arrangement "0..*" -- "0..*" Instrument
 
 ```plantuml
 @startuml
-!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
-!define primary_key(x) <b>x</b>
-!define foreign_key(x) <i>x</i>
-!define column(x) x
-
 hide methods
 hide stereotypes
 
 entity "users" as users {
-  primary_key(id): INTEGER
+  <b>id</b>: INTEGER
   --
-  column(name): VARCHAR(255)
-  column(email): VARCHAR(255) UNIQUE
-  column(password): VARCHAR(255)
-  column(role): ENUM('visitor','user','arranger','admin')
-  column(created_at): TIMESTAMP
-  column(updated_at): TIMESTAMP
+  name: VARCHAR(255)
+  email: VARCHAR(255) UNIQUE
+  password: VARCHAR(255)
+  role: ENUM('visitor','user','arranger','admin')
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
 }
 
 entity "partitions" as partitions {
-  primary_key(id): INTEGER
+  <b>id</b>: INTEGER
   --
-  column(title): VARCHAR(255)
-  column(composer): VARCHAR(255) NULL
-  column(musicxml_file_path): VARCHAR(255)
-  foreign_key(user_id): INTEGER
-  column(created_at): TIMESTAMP
-  column(updated_at): TIMESTAMP
+  title: VARCHAR(255)
+  composer: VARCHAR(255) NULL
+  musicxml_file_path: VARCHAR(255)
+  <i>user_id</i>: INTEGER
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
 }
 
 entity "arrangements" as arrangements {
-  primary_key(id): INTEGER
+  <b>id</b>: INTEGER
   --
-  foreign_key(partition_id): INTEGER
-  foreign_key(user_id): INTEGER
-  column(name): VARCHAR(255)
-  column(instruments_config): JSON
-  column(audio_file_path): VARCHAR(255) NULL
-  column(status): ENUM('pending','processing','completed','failed')
-  column(created_at): TIMESTAMP
-  column(updated_at): TIMESTAMP
+  <i>partition_id</i>: INTEGER
+  name: VARCHAR(255)
+  instruments_config: JSON
+  audio_file_path: VARCHAR(255) NULL
+  status: ENUM('pending','processing','completed','failed')
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "instruments" as instruments {
+  <b>id</b>: INTEGER
+  --
+  name: VARCHAR(255)
+  category: VARCHAR(255)
+  soundfont_file_path: VARCHAR(255)
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+}
+
+entity "arrangement_instruments" as arrangement_instruments {
+  <b>id</b>: INTEGER
+  --
+  <i>arrangement_id</i>: INTEGER
+  <i>instrument_id</i>: INTEGER
+  track_number: INTEGER
 }
 
 entity "comments" as comments {
-  primary_key(id): INTEGER
+  <b>id</b>: INTEGER
   --
-  foreign_key(arrangement_id): INTEGER
-  foreign_key(user_id): INTEGER
-  column(content): TEXT
-  column(created_at): TIMESTAMP
-  column(updated_at): TIMESTAMP
+  <i>arrangement_id</i>: INTEGER
+  <i>user_id</i>: INTEGER
+  content: TEXT
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
 }
 
-entity "likes" as likes {
-  primary_key(id): INTEGER
+entity "appreciations" as appreciations {
+  <b>id</b>: INTEGER
   --
-  foreign_key(arrangement_id): INTEGER
-  foreign_key(user_id): INTEGER
-  column(is_like): BOOLEAN
-  column(created_at): TIMESTAMP
-  column(updated_at): TIMESTAMP
+  <i>arrangement_id</i>: INTEGER
+  <i>user_id</i>: INTEGER
+  is_like: BOOLEAN
+  created_at: TIMESTAMP
+}
+
+entity "user_arrangements" as user_arrangements {
+  <b>id</b>: INTEGER
+  --
+  <i>user_id</i>: INTEGER
+  <i>arrangement_id</i>: INTEGER
+  created_at: TIMESTAMP
 }
 
 users ||--o{ partitions : "user_id"
-users ||--o{ arrangements : "user_id"
+users ||--o{ user_arrangements : "user_id"
 users ||--o{ comments : "user_id"
-users ||--o{ likes : "user_id"
+users ||--o{ appreciations : "user_id"
 
 partitions ||--o{ arrangements : "partition_id"
 
+arrangements ||--o{ arrangement_instruments : "arrangement_id"
 arrangements ||--o{ comments : "arrangement_id"
-arrangements ||--o{ likes : "arrangement_id"
+arrangements ||--o{ appreciations : "arrangement_id"
+arrangements ||--o{ user_arrangements : "arrangement_id"
+
+instruments ||--o{ arrangement_instruments : "instrument_id"
 
 @enduml
 ```
