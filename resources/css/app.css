@@ -25,39 +25,43 @@ main {
     padding: 2.5rem 0;
 }
 
-/* ===== NAVBAR ===== */
+/* ===== NAVBAR (avec gradient amélioré) ===== */
 nav {
-    background-color: #1a1a1a;
-    border-bottom: 1px solid #333333;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    background: radial-gradient(circle at top left, #1f2937 0%, #0f0f0f 55%);
+    border-bottom: 1px solid #27272a;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 nav > div {
-    width: 100%;
-    padding: 0 1rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 4rem;
     max-width: 100%;
 }
 
+.navbar-inner {
+    max-width: 80rem;
+    margin: 0 auto;
+    padding: 0 1rem;
+    height: 3.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 .navbar-logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #6366f1;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #f5f5f5;
     text-decoration: none;
     transition: color 0.2s;
 }
 
 .navbar-logo:hover {
-    color: #818cf8;
+    color: #a5b4fc;
 }
 
 .navbar-links {
     display: flex;
     gap: 1.5rem;
-    margin-left: auto;
+    align-items: center;
 }
 
 .navbar-link {
@@ -66,22 +70,37 @@ nav > div {
     color: #d1d5db;
     text-decoration: none;
     transition: color 0.2s;
+    position: relative;
 }
 
 .navbar-link:hover {
-    color: #ffffff;
+    color: #a5b4fc;
 }
 
-/* ===== FOOTER ===== */
+.navbar-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #6366f1;
+    transition: width 0.3s ease;
+}
+
+.navbar-link:hover::after {
+    width: 100%;
+}
+
+/* ===== FOOTER (avec gradient) ===== */
 footer {
-    background-color: #1a1a1a;
-    color: #d1d5db;
-    margin-top: auto;
-    border-top: 1px solid #333333;
+    background: linear-gradient(to right, #0f172a, #020617);
+    border-top: 1px solid #27272a;
     padding: 1.5rem 1rem;
+    margin-top: auto;
 }
 
-footer > div {
+.app-footer-inner {
     max-width: 80rem;
     margin: 0 auto;
     display: flex;
@@ -90,7 +109,7 @@ footer > div {
 }
 
 @media (min-width: 768px) {
-    footer > div {
+    .app-footer-inner {
         flex-direction: row;
         justify-content: space-between;
         align-items: center;
@@ -98,10 +117,15 @@ footer > div {
     }
 }
 
+.app-footer-left {
+    flex-shrink: 0;
+}
+
 .app-footer-title {
     font-size: 0.875rem;
     font-weight: bold;
     margin: 0;
+    color: #d1d5db;
 }
 
 .app-footer-sub {
@@ -124,6 +148,220 @@ footer > div {
 
 .app-footer-link:hover {
     color: #ffffff;
+}
+.home-section-header {
+    margin-top: 2.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.home-section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #e5e7eb;
+    margin-bottom: 0.25rem;
+}
+
+.home-section-sub {
+    font-size: 0.875rem;
+    color: #9ca3af;
+    max-width: 36rem;
+}
+
+.home-empty-text {
+    margin-top: 2rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+/* ===== PARTITION GRID ===== */
+.partition-grid {
+    margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+/* ===== PARTITION CARD ===== */
+.partition-card {
+    background-color: #0b0b0b;
+    border-radius: 0.75rem;
+    border: 1px solid #27272a;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.45);
+    transition: transform 0.18s ease-out, box-shadow 0.18s ease-out, border-color 0.18s ease-out;
+}
+
+.partition-card:hover {
+    transform: translateY(-3px);
+    border-color: #6366f1;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7);
+}
+
+.partition-card-header {
+    height: 7rem;
+    background: radial-gradient(circle at top, #1f2937 0%, #020617 65%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-bottom: 1px solid #27272a;
+}
+
+.partition-card-icon {
+    height: 3rem;
+    width: 3rem;
+    color: #818cf8;
+}
+
+.partition-card-body {
+    padding: 1rem;
+    flex-grow: 1;
+}
+
+.partition-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.15rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    background: rgba(55, 65, 81, 0.8);
+    color: #e5e7eb;
+    margin-bottom: 0.45rem;
+}
+
+.partition-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #f9fafb;
+    margin: 0;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.partition-meta {
+    font-size: 0.8rem;
+    color: #9ca3af;
+    margin: 0;
+    margin-bottom: 0.35rem;
+}
+
+.partition-meta-strong {
+    color: #e5e7eb;
+    font-weight: 600;
+}
+
+.partition-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.75rem;
+    color: #6b7280;
+    margin-top: 0.2rem;
+}
+
+.partition-meta-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.partition-meta-icon {
+    width: 0.9rem;
+    height: 0.9rem;
+}
+
+.partition-card-footer {
+    background-color: #020617;
+    border-top: 1px solid #27272a;
+    padding: 0.6rem 0.9rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.partition-link {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #a5b4fc;
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.partition-link:hover {
+    color: #e5e7eb;
+}
+
+.partition-locked-text {
+    font-size: 0.7rem;
+    color: #6b7280;
+    font-style: italic;
+}
+
+.partition-actions {
+    display: inline-flex;
+    gap: 0.4rem;
+    align-items: center;
+}
+
+.partition-action {
+    background: transparent;
+    border: none;
+    padding: 0.2rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    color: #9ca3af;
+    transition: color 0.15s ease;
+}
+
+.partition-action-icon {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.partition-action-edit {
+    color: #facc15;
+}
+
+.partition-action-edit:hover {
+    color: #fbbf24;
+}
+
+.partition-action-delete {
+    color: #f87171;
+}
+
+.partition-action-delete:hover {
+    color: #fb7185;
+}
+
+
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+    background: linear-gradient(135deg, #1f2937 0%, #0f0f0f 100%);
+    border-bottom: 1px solid #27272a;
+    padding: 2rem 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.page-header-inner {
+    max-width: 80rem;
+    margin: 0 auto;
+}
+
+.page-header-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #f5f5f5;
+    margin: 0;
 }
 
 /* ===== CONTENU PAGES ===== */
