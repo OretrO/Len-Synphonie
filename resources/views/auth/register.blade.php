@@ -1,9 +1,7 @@
-@extends('layouts.app')
+<x-layouts.app>
+    <x-slot:title>Inscription</x-slot:title>
 
-@section('title', 'Inscription')
-
-@section('content')
-<div class="page-container">
+    <div class="page-container">
     <div class="card register-card">
         <h1 class="card-title">Créer un compte</h1>
 
@@ -177,5 +175,5 @@ document.getElementById('avatar').addEventListener('change', function(e) {
     }
 });
 </script>
-@endsection
+</x-layouts.app>
 
