@@ -214,16 +214,18 @@ entity "user_arrangements" as user_arrangements {
 }
 
 users ||--o{ partitions : "user_id"
-users ||--o{ user_arrangements : "user_id"
 users ||--o{ comments : "user_id"
-users ||--o{ appreciations : "user_id"
+
+users ||..o{ user_arrangements : "user_id"
+arrangements ||..o{ user_arrangements : "arrangement_id"
+
+user_arrangements ||..o{ appreciations : "user/arrangement"
+arrangements ||..o{ appreciations : "arrangement_id"
 
 partitions ||--o{ arrangements : "partition_id"
 
 arrangements ||--o{ arrangement_instruments : "arrangement_id"
 arrangements ||--o{ comments : "arrangement_id"
-arrangements ||--o{ appreciations : "arrangement_id"
-arrangements ||--o{ user_arrangements : "arrangement_id"
 
 instruments ||--o{ arrangement_instruments : "instrument_id"
 ```
