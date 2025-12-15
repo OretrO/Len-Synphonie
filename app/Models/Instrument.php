@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Partition extends Model
+class Instrument extends Model
 {
     use HasFactory;
 
@@ -15,19 +15,19 @@ class Partition extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'title',
-        'composer',
-        'genre',
+        'name',
+        'category',
         'description',
-        'original_file_path',
     ];
 
     /**
-     * Get the arrangements for the partition.
+     * Get the arrangements that use this instrument.
      */
     public function arrangements()
     {
-        return $this->hasMany(Arrangement::class);
+        return $this->belongsToMany(Arrangement::class, 'arrangement_instruments')
+            ->withPivot('track_number')
+            ->withTimestamps();
     }
 }
 
