@@ -3,22 +3,21 @@
 @section('title', 'À propos')
 
 @section('content')
-    <x-layout.container>
-        <x-section.title>
-            À propos
-        </x-section.title>
+    <div class="page-container">
+        <div class="card">
+            <h1 class="card-title">À propos</h1>
 
-        <p class="mt-4 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
-            Cette application web LenSymphony-Web permet de gérer des partitions musicales.
-            Elle est développée dans le cadre de la SAÉ S3.A.01 - Développement d’une application
-            à l’IUT de Lens, Département Informatique.
-        </p>
+            <p class="card-text">
+                LenSymphony-Web est une application web permettant de gérer des partitions musicales
+                (import, organisation, consultation et partage), développée dans le cadre de la SAÉ S3.A.01
+                - Développement d’une application à l’IUT de Lens.
+            </p>
 
-        <p class="mt-2 text-sm leading-relaxed text-gray-700 dark:text-gray-200">
-            L’objectif de ce projet est de mettre en œuvre un système d’information complet en
-            s’appuyant sur Laravel : modèles de données, migrations, modèles Eloquent, factories
-            et seeders, ainsi que une interface utilisateur basée sur des composants Blade
-            réutilisables.
-        </p>
-    </x-layout.container>
+            <p class="card-text card-text-muted">
+                Le projet met en œuvre un système d’information complet avec Laravel : modèles de données,
+                migrations, modèles Eloquent, factories/seeders, ainsi qu’une interface basée sur des
+                composants Blade réutilisables.
+            </p>
+        </div>
+    </div>
 @endsection
