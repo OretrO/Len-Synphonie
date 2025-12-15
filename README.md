@@ -57,7 +57,7 @@
 
 ---
 
-@startuml
+```plantuml
 skinparam classAttributeIconSize 0
 
 class User {
@@ -129,5 +129,4 @@ note right of Arrangement::status
 pending, processing,
 completed, failed
 end note
-
-@enduml
+```
