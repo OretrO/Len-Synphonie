@@ -2,24 +2,42 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    use WithoutModelEvents;
-
     /**
      * Seed the application's database.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        $this->command->info('🎵 Démarrage du seeding de LenSymphony...');
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // L'ordre est important pour respecter les contraintes de clés étrangères
+        $this->call([
+            UserSeeder::class,
+            InstrumentSeeder::class,
+            PartitionSeeder::class,
+            ArrangementSeeder::class,
+            UserArrangementSeeder::class,
+            AppreciationSeeder::class,
+            CommentSeeder::class,
         ]);
+
+        $this->command->info('✅ Seeding terminé avec succès !');
+        $this->command->info('');
+        $this->command->info('📊 Résumé des données générées :');
+        $this->command->table(
+            ['Table', 'Nombre d\'enregistrements'],
+            [
+                ['Users', \App\Models\User::count()],
+                ['Instruments', \App\Models\Instrument::count()],
+                ['Partitions', \App\Models\Partition::count()],
+                ['Arrangements', \App\Models\Arrangement::count()],
+                ['User Arrangements', \App\Models\UserArrangement::count()],
+                ['Appreciations', \App\Models\Appreciation::count()],
+                ['Comments', \App\Models\Comment::count()],
+            ]
+        );
     }
 }

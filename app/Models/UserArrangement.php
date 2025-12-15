@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Partition extends Model
+class UserArrangement extends Model
 {
     use HasFactory;
 
@@ -17,14 +17,12 @@ class Partition extends Model
      * @var list<string>
      */
     protected $fillable = [
-        'title',
-        'composer',
-        'musicxml_file_path',
         'user_id',
+        'arrangement_id',
     ];
 
     /**
-     * Get the user that created the partition.
+     * Get the user that owns the user arrangement.
      */
     public function user(): BelongsTo
     {
@@ -32,11 +30,19 @@ class Partition extends Model
     }
 
     /**
-     * Get the arrangements for the partition.
+     * Get the arrangement that owns the user arrangement.
      */
-    public function arrangements(): HasMany
+    public function arrangement(): BelongsTo
     {
-        return $this->hasMany(Arrangement::class);
+        return $this->belongsTo(Arrangement::class);
+    }
+
+    /**
+     * Get the appreciations for this user arrangement.
+     */
+    public function appreciations(): HasMany
+    {
+        return $this->hasMany(Appreciation::class);
     }
 }
 
