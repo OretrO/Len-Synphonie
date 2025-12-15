@@ -1,24 +1,11 @@
-<x-layouts.app>
-    <x-slot:title>{{ $partition->title }}</x-slot:title>
-
     <div class="page-container">
-        <div class="partition-header">
-            <h1 class="partition-title">{{ $partition->title }}</h1>
 
-            @auth
-                @if(auth()->user()->id === $partition->user_id || auth()->user()->role === 'admin')
-                    <div class="partition-actions">
-                        <a href="{{ route('partitions.edit', $partition) }}" class="btn btn-outline">
-                            Modifier
-                        </a>
-                        <form action="{{ route('partitions.destroy', $partition) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette partition ?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Supprimer</button>
-                        </form>
-                    </div>
-                @endif
-            @endauth
+                    <a href="{{ route('partitions.edit', $partition) }}" class="btn btn-outline">
+                    </a>
+                        @csrf
+                        @method('DELETE')
+                    </form>
+            </div>
         </div>
 
         <div class="partition-info">
