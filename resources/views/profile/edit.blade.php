@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-layouts.app>
     <x-slot:header>
         Mon Profil
     </x-slot:header>
@@ -136,4 +136,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-layouts.app>
