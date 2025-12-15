@@ -1,5 +1,4 @@
-<?php ?>
-<x-layout-app title="Accueil - LenSymphony">
+<x-layouts.app title="Accueil - LenSymphony">
     <div class="page-container">
         <div class="card">
             <h1 class="card-title">Welcome to LenSymphony</h1>
@@ -39,4 +38,4 @@
             </p>
         @endif
     </div>
-</x-layout-app>
+</x-layouts.app>

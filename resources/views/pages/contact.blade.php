@@ -1,5 +1,4 @@
-blade
-<x-layout-app title="Contact - LenSymphony">
+<x-layouts.app title="Contact - LenSymphony">
     <div class="page-container">
         <div class="card">
             <h1 class="card-title">Contact</h1>
@@ -28,4 +27,4 @@ blade
             </form>
         </div>
     </div>
-</x-layout-app>
+</x-layouts.app>
