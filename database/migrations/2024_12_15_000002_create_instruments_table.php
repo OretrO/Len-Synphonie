@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('instruments', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('category');
+            $table->string('category')->nullable();
             $table->string('soundfont_file_path');
             $table->timestamps();
         });
@@ -28,4 +28,3 @@ return new class extends Migration
         Schema::dropIfExists('instruments');
     }
 };
-
