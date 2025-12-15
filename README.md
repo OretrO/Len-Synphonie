@@ -103,23 +103,23 @@ class Comment {
   - updated_at: Timestamp
 }
 
-class Utilise {
+class Utilise <<association>> {
   - track_number: Integer
 }
-(Arrangement, Instrument) .. (Utilise) : "0..* .. 1"
 
-class Appreciation {
+class Appreciation <<association>> {
   - is_like: Boolean
+  - created_at: Timestamp
 }
-(User, Arrangement) .. (Appreciation) : "0..* .. 0..*"
-User "1" -- "0..*" Partition
-User "**" -- "0..*" Arrangement
-User "1" -- "0..*" Comment
 
-Partition "1" -- "0..*" Arrangement
-
-Arrangement "1" -- "0..*" Comment
-
+User "1" -- "0..*" Partition : compose
+User "**" -- "0..*" Arrangement : crée
+(User, Arrangement) .. Appreciation
+User "1" -- "0..*" Comment : écrit
+Partition "1" -- "0..*" Arrangement : génère
+Arrangement "1" -- "0..*" Comment : possède
+Arrangement "0..*" -- "0..*" Instrument
+(Arrangement, Instrument) .. Utilise
 ```
 
 ---
