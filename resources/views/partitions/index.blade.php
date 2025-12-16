@@ -26,19 +26,19 @@
             <form action="{{ route('partitions.search') }}" method="GET" class="search-wrapper" role="search">
                 <label for="query" class="sr-only">Search scores</label>
 
-                <div class="w-full flex items-center gap-2">
+                <div class="w-full flex items-center gap-3">
                     <div class="relative flex-1">
                         <input
                             id="query"
                             name="query"
                             type="text"
-                            class="search-input pr-10"
+                            class="search-input"
                             placeholder="Search by title, composer or genre..."
                             value="{{ request('query', '') }}"
                         >
 
-                        <button type="submit" class="absolute right-2 inset-y-0 flex items-center text-slate-400 hover:text-slate-200">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <button type="submit" class="absolute right-4 top-1/2 -translate-y-1/2 flex items-center text-slate-400 hover:text-slate-200">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
                             </svg>
                         </button>
@@ -46,7 +46,7 @@
 
                     <!-- Scope select: search in title, composer or both -->
                     <label for="scope" class="sr-only">Scope</label>
-                    <select id="scope" name="scope" class="ml-2 px-2 py-1 border rounded bg-slate-800 text-slate-200 border-slate-600 focus:border-primary focus:ring-primary">
+                    <select id="scope" name="scope" class="px-4 py-3 border rounded bg-slate-800 text-slate-200 border-slate-600 focus:border-primary focus:ring-primary text-base font-medium" style="min-height: 56px;">
                         <option value="all" {{ request('scope', 'all') === 'all' ? 'selected' : '' }}>Tout</option>
                         <option value="title" {{ request('scope') === 'title' ? 'selected' : '' }}>Titre</option>
                         <option value="composer" {{ request('scope') === 'composer' ? 'selected' : '' }}>Compositeur</option>

@@ -21,12 +21,19 @@
                     @php
                         $author = $partition->user ?? null;
                         // Gestion sécurisée de l'avatar
-                        $avatarPath = ($author && !empty($author->avatar))
-                            ? asset('storage/' . $author->avatar)
-                            : asset('avatars/default.svg'); // Assurez-vous d'avoir une image par défaut
+                        $avatarPath = $author && $author->avatar && $author->avatar !== 'avatars/default.svg'
+                            ? (\Illuminate\Support\Facades\Storage::disk('public')->exists($author->avatar) ? asset('storage/' . $author->avatar) : null)
+                            : null;
                     @endphp
 
-                    <img src="{{ $avatarPath }}" alt="{{ $author->name ?? 'User' }} avatar" class="w-10 h-10 rounded-full object-cover border border-slate-600" />
+                    <div class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center border border-slate-600 bg-slate-700">
+                        @if($avatarPath)
+                            <img src="{{ $avatarPath }}" alt="{{ $author->name ?? 'User' }} avatar" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        @endif
+                        <svg class="w-full h-full p-1 {{ $avatarPath ? 'hidden' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
                     <div>
                         <div class="text-sm font-medium">{{ $author->name ?? 'Unknown' }}</div>
                         <div class="text-xs text-slate-400">@if($author){{ $author->email }}@endif</div>
