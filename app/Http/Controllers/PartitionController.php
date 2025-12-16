@@ -60,7 +60,6 @@ class PartitionController extends Controller
             'title' => $validated['title'],
             'composer' => $validated['composer'],
             'musicxml_file_path' => $path,
-            'user_id' => Auth::id(),
             'genre' => $validated['genre'],
             ...$validated,
             'user_id' => $request->user()->id,
