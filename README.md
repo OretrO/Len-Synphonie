@@ -1,116 +1,125 @@
 # Tableau des Tâches par Membre
 
-| Sprint | Membre         | Tâches                  | Statut   |
-|--------|----------------|-------------------------|----------|
-| 1      | Regniez Léo    | \#15, \#14, \#13, \#12  | Terminée |
-| 1      | Strobbe Théo   | \#11, \#10, \#9         | Terminée |
-| 1      | Bras Tristan   | \#8, \#7, \#3           | Terminée |
-| 1      | Plouvin Nathan | \#6, \#5, \#4, \#2, \#1 | Terminée |
-| 2      | Regniez Léo    | \#26, \#25, \#24, \#23  | Terminée |
-| 2      | Strobbe Théo   | \#22                    | Terminée |
-| 2      | Bras Tristan   | \#21, \#20, \#19, \#18  | Terminée |
-| 2      | Plouvin Nathan | \#18, \#17, \#16        | Terminée |
-| 3      | Regniez Léo    | \#38, \#37, \#36, \#35  | Terminée |
-| 3      | Strobbe Théo   | \#34, \#33              | Terminée |
-| 3      | Bras Tristan   | \#32, \#31              | Terminée |
-| 3      | Plouvin Nathan | \#30, \#29              | Terminée |
-| 4      | Regniez Léo    | \#46, \#45              | Terminée |
-| 4      | Strobbe Théo   | \47, \#44               | Terminée |
-| 4      | Bras Tristan   | \#48, \#42, \#41        | Terminée |
-| 4      | Plouvin Nathan | \#48, \#40, \#39        | Terminée |
+| Sprint | Membre         | Tâches                       | Statut   |
+| ------ | -------------- | ---------------------------- | -------- |
+| 1      | Regniez Léo    | \#15, \#14, \#13, \#12       | Terminée |
+| 1      | Strobbe Théo   | \#11, \#10, \#9              | Terminée |
+| 1      | Bras Tristan   | \#8, \#7, \#3                | Terminée |
+| 1      | Plouvin Nathan | \#6, \#5, \#4, \#2, \#1      | Terminée |
+| 2      | Regniez Léo    | \#26, \#25, \#24, \#23       | Terminée |
+| 2      | Strobbe Théo   | \#22                         | Terminée |
+| 2      | Bras Tristan   | \#21, \#20, \#19, \#18       | Terminée |
+| 2      | Plouvin Nathan | \#18, \#17, \#16             | Terminée |
+| 3      | Regniez Léo    | \#38, \#37, \#36, \#35       | Terminée |
+| 3      | Strobbe Théo   | \#34, \#33                   | Terminée |
+| 3      | Bras Tristan   | \#32, \#31                   | Terminée |
+| 3      | Plouvin Nathan | \#30, \#29                   | Terminée |
+| 4      | Regniez Léo    | \#46, \#45                   | Terminée |
+| 4      | Strobbe Théo   | \47, \#44                    | Terminée |
+| 4      | Bras Tristan   | \#48, \#42, \#41             | Terminée |
+| 4      | Plouvin Nathan | \#48, \#40, \#39, \#46, \#45 | Terminée |
 
+Config MailTip Tristan Bras réalisé en dehors des sprints.
+Gestion des commentaire et like non réalisé.
+Des arranagement seront generé avec les seeders pour tester
 
 ---
 
 ## Justification de l'Utilisation de l'IA
 
 ### Contexte
+
 Le projet LenSymphony-Web est un projet SAE S3.A.01 nécessitant une stack technique complexe (Laravel, Vue.js, MusicXML, synthèse audio). L'IA à été utilisée pour accélérer certaines phases de développement cependant:
-- 
-- Chaque code généré est **revu et validé** avant intégration
-- Les décisions techniques importantes sont **prises collectivement**
 
-
-
+-
+-   Chaque code généré est **revu et validé** avant intégration
+-   Les décisions techniques importantes sont **prises collectivement**
 
 # Dictionnaire de Données - LenSymphony-Web
 
 ### User (Utilisateur)
-| Attribut | Type | Description | Contraintes |
-|----------|------|-------------|-------------|
-| id | Integer | Identifiant unique | PK, Auto-increment |
-| name | String | Nom de l'utilisateur | Required, Max: 255 |
-| email | String | Adresse email | Required, Unique |
-| password | String | Mot de passe hashé | Required, Min: 8 |
-| role | Enum | Rôle de l'utilisateur | visitor, user, arranger, admin |
-| created_at | Timestamp | Date de création | Auto |
-| updated_at | Timestamp | Date de modification | Auto |
+
+| Attribut   | Type      | Description           | Contraintes                    |
+| ---------- | --------- | --------------------- | ------------------------------ |
+| id         | Integer   | Identifiant unique    | PK, Auto-increment             |
+| name       | String    | Nom de l'utilisateur  | Required, Max: 255             |
+| email      | String    | Adresse email         | Required, Unique               |
+| password   | String    | Mot de passe hashé    | Required, Min: 8               |
+| role       | Enum      | Rôle de l'utilisateur | visitor, user, arranger, admin |
+| created_at | Timestamp | Date de création      | Auto                           |
+| updated_at | Timestamp | Date de modification  | Auto                           |
 
 ### Partition
-| Attribut | Type | Description | Contraintes |
-|----------|------|-------------|-------------|
-| id | Integer | Identifiant unique | PK, Auto-increment |
-| title | String | Titre de la partition | Required, Max: 255 |
-| composer | String | Compositeur | Nullable, Max: 255 |
-| musicxml_file_path | String | Chemin du fichier MusicXML | Required |
-| musicpdf_file_path | String | Chemin du fichier PDF | Nullable |
-| user_id | Integer | Créateur de la partition | FK → User.id |
-| created_at | Timestamp | Date d'import | Auto |
-| updated_at | Timestamp | Date de modification | Auto |
+
+| Attribut           | Type      | Description                | Contraintes        |
+| ------------------ | --------- | -------------------------- | ------------------ |
+| id                 | Integer   | Identifiant unique         | PK, Auto-increment |
+| title              | String    | Titre de la partition      | Required, Max: 255 |
+| composer           | String    | Compositeur                | Nullable, Max: 255 |
+| musicxml_file_path | String    | Chemin du fichier MusicXML | Required           |
+| musicpdf_file_path | String    | Chemin du fichier PDF      | Nullable           |
+| user_id            | Integer   | Créateur de la partition   | FK → User.id       |
+| created_at         | Timestamp | Date d'import              | Auto               |
+| updated_at         | Timestamp | Date de modification       | Auto               |
 
 ### Arrangement
-| Attribut | Type | Description | Contraintes |
-|----------|------|-------------|-------------|
-| id | Integer | Identifiant unique | PK, Auto-increment |
-| partition_id | Integer | Partition associée | FK → Partition.id |
-| creator_id | Integer | Créateur de l'arrangement | FK → User.id |
-| name | String | Nom de l'arrangement | Required, Max: 255 |
-| instruments_config | JSON | Configuration des instruments | Required |
-| audio_file_path | String | Chemin du fichier audio généré | Nullable |
-| status | Enum | Statut de la synthèse | pending, processing, completed, failed |
-| created_at | Timestamp | Date de création | Auto |
-| updated_at | Timestamp | Date de modification | Auto |
+
+| Attribut           | Type      | Description                    | Contraintes                            |
+| ------------------ | --------- | ------------------------------ | -------------------------------------- |
+| id                 | Integer   | Identifiant unique             | PK, Auto-increment                     |
+| partition_id       | Integer   | Partition associée             | FK → Partition.id                      |
+| creator_id         | Integer   | Créateur de l'arrangement      | FK → User.id                           |
+| name               | String    | Nom de l'arrangement           | Required, Max: 255                     |
+| instruments_config | JSON      | Configuration des instruments  | Required                               |
+| audio_file_path    | String    | Chemin du fichier audio généré | Nullable                               |
+| status             | Enum      | Statut de la synthèse          | pending, processing, completed, failed |
+| created_at         | Timestamp | Date de création               | Auto                                   |
+| updated_at         | Timestamp | Date de modification           | Auto                                   |
 
 ### Comment (Commentaire)
-| Attribut | Type | Description | Contraintes |
-|----------|------|-------------|-------------|
-| id | Integer | Identifiant unique | PK, Auto-increment |
-| arrangement_id | Integer | Arrangement commenté | FK → Arrangement.id |
-| user_id | Integer | Auteur du commentaire | FK → User.id |
-| content | Text | Contenu du commentaire | Required |
-| created_at | Timestamp | Date de création | Auto |
-| updated_at | Timestamp | Date de modification | Auto |
+
+| Attribut       | Type      | Description            | Contraintes         |
+| -------------- | --------- | ---------------------- | ------------------- |
+| id             | Integer   | Identifiant unique     | PK, Auto-increment  |
+| arrangement_id | Integer   | Arrangement commenté   | FK → Arrangement.id |
+| user_id        | Integer   | Auteur du commentaire  | FK → User.id        |
+| content        | Text      | Contenu du commentaire | Required            |
+| created_at     | Timestamp | Date de création       | Auto                |
+| updated_at     | Timestamp | Date de modification   | Auto                |
 
 ### Appreciation (Classe associative User-Arrangement)
-| Attribut | Type | Description | Contraintes |
-|----------|------|-------------|-------------|
-| id | Integer | Identifiant unique | PK, Auto-increment |
-| user_id | Integer | Utilisateur | FK → User.id |
-| arrangement_id | Integer | Arrangement apprécié | FK → Arrangement.id |
-| is_like | Boolean | Like (true) ou Dislike (false) | Required |
-| created_at | Timestamp | Date de création | Auto |
-| updated_at | Timestamp | Date de modification | Auto |
+
+| Attribut       | Type      | Description                    | Contraintes         |
+| -------------- | --------- | ------------------------------ | ------------------- |
+| id             | Integer   | Identifiant unique             | PK, Auto-increment  |
+| user_id        | Integer   | Utilisateur                    | FK → User.id        |
+| arrangement_id | Integer   | Arrangement apprécié           | FK → Arrangement.id |
+| is_like        | Boolean   | Like (true) ou Dislike (false) | Required            |
+| created_at     | Timestamp | Date de création               | Auto                |
+| updated_at     | Timestamp | Date de modification           | Auto                |
 
 **Note :** Contrainte unique sur (user_id, arrangement_id) - un utilisateur ne peut apprécier qu'une seule fois le même arrangement.
 
 ### Instrument
-| Attribut | Type | Description | Contraintes |
-|----------|------|-------------|-------------|
-| id | Integer | Identifiant unique | PK, Auto-increment |
-| name | String | Nom de l'instrument | Required, Max: 255 |
-| category | String | Catégorie (cordes, vents, etc.) | Nullable, Max: 255 |
-| soundfont_file_path | String | Chemin du fichier soundfont | Required |
-| created_at | Timestamp | Date de création | Auto |
-| updated_at | Timestamp | Date de modification | Auto |
+
+| Attribut            | Type      | Description                     | Contraintes        |
+| ------------------- | --------- | ------------------------------- | ------------------ |
+| id                  | Integer   | Identifiant unique              | PK, Auto-increment |
+| name                | String    | Nom de l'instrument             | Required, Max: 255 |
+| category            | String    | Catégorie (cordes, vents, etc.) | Nullable, Max: 255 |
+| soundfont_file_path | String    | Chemin du fichier soundfont     | Required           |
+| created_at          | Timestamp | Date de création                | Auto               |
+| updated_at          | Timestamp | Date de modification            | Auto               |
 
 ### ArrangementInstrument (Classe associative Arrangement-Instrument)
-| Attribut | Type | Description | Contraintes |
-|----------|------|-------------|-------------|
-| arrangement_id | Integer | Arrangement | PK, FK → Arrangement.id |
-| instrument_id | Integer | Instrument | PK, FK → Instrument.id |
-| track_number | Integer | Numéro de piste | Required |
-| created_at | Timestamp | Date de création | Auto |
-| updated_at | Timestamp | Date de modification | Auto |
+
+| Attribut       | Type      | Description          | Contraintes             |
+| -------------- | --------- | -------------------- | ----------------------- |
+| arrangement_id | Integer   | Arrangement          | PK, FK → Arrangement.id |
+| instrument_id  | Integer   | Instrument           | PK, FK → Instrument.id  |
+| track_number   | Integer   | Numéro de piste      | Required                |
+| created_at     | Timestamp | Date de création     | Auto                    |
+| updated_at     | Timestamp | Date de modification | Auto                    |
 
 **Note :** Clé primaire composite sur (arrangement_id, instrument_id).
 
@@ -285,36 +294,41 @@ instruments ||..o{ arrangement_instruments : "instrument_id"
 ### Structure détaillée des tables
 
 #### **users** (table principale)
-- Contient les informations des utilisateurs
-- Champs : id, name, email, password, role, timestamps
+
+-   Contient les informations des utilisateurs
+-   Champs : id, name, email, password, role, timestamps
 
 #### **partitions** (table principale)
-- Stocke les partitions musicales originales
-- Clé étrangère : user_id → users(id)
+
+-   Stocke les partitions musicales originales
+-   Clé étrangère : user_id → users(id)
 
 #### **arrangements** (table principale)
-- Représente les arrangements créés à partir des partitions
-- Clé étrangère : partition_id → partitions(id)
-- Clé étrangère : creator_id → users(id) [relation directe créateur]
+
+-   Représente les arrangements créés à partir des partitions
+-   Clé étrangère : partition_id → partitions(id)
+-   Clé étrangère : creator_id → users(id) [relation directe créateur]
 
 #### **instruments** (table principale)
-- Catalogue des instruments disponibles
+
+-   Catalogue des instruments disponibles
 
 #### **comments** (table principale)
-- Commentaires sur les arrangements
-- Clé étrangère : user_id → users(id)
-- Clé étrangère : arrangement_id → arrangements(id)
+
+-   Commentaires sur les arrangements
+-   Clé étrangère : user_id → users(id)
+-   Clé étrangère : arrangement_id → arrangements(id)
 
 #### **arrangement_instruments** (table associative)
-- Lie les arrangements aux instruments utilisés
-- Clé primaire composite : (arrangement_id, instrument_id)
-- Attribut additionnel : track_number
+
+-   Lie les arrangements aux instruments utilisés
+-   Clé primaire composite : (arrangement_id, instrument_id)
+-   Attribut additionnel : track_number
 
 #### **appreciations** (table associative - classe association)
-- Lie les utilisateurs aux arrangements qu'ils apprécient
-- Clé étrangère : user_id → users(id)
-- Clé étrangère : arrangement_id → arrangements(id)
-- Attribut additionnel : is_like (true = like, false = dislike)
-- Contrainte unique sur (user_id, arrangement_id)
 
-
+-   Lie les utilisateurs aux arrangements qu'ils apprécient
+-   Clé étrangère : user_id → users(id)
+-   Clé étrangère : arrangement_id → arrangements(id)
+-   Attribut additionnel : is_like (true = like, false = dislike)
+-   Contrainte unique sur (user_id, arrangement_id)
