@@ -46,7 +46,8 @@ class ArrangementController extends Controller
             'status'             => 'draft',
         ]);
 
-        return redirect()->route('arrangements.show', $arrangement);
+        return redirect()->route('arrangements.show', $arrangement)
+            ->with('success', 'Arrangement created successfully.');
     }
 
     public function edit(Arrangement $arrangement)
@@ -66,7 +67,8 @@ class ArrangementController extends Controller
 
         $arrangement->update($validated);
 
-        return redirect()->route('arrangements.show', $arrangement);
+        return redirect()->route('arrangements.show', $arrangement)
+            ->with('success', 'Arrangement updated successfully.');
     }
 
     public function destroy(Arrangement $arrangement)
@@ -75,6 +77,7 @@ class ArrangementController extends Controller
 
         $arrangement->delete();
 
-        return redirect()->route('arrangements.index');
+        return redirect()->route('arrangements.index')
+            ->with('success', 'Arrangement deleted successfully.');
     }
 }

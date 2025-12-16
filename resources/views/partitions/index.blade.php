@@ -22,13 +22,27 @@
         </div>
 
         <!-- Search bar (functional) -->
-        <form action="{{ route('partitions.search') }}" method="GET" class="search-wrapper" role="search">
-            <label for="query" class="sr-only">Search scores</label>
-            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
+        <div class="max-w-3xl mx-auto w-full">
+            <form action="{{ route('partitions.search') }}" method="GET" class="search-wrapper" role="search">
+                <label for="query" class="sr-only">Search scores</label>
 
-            <input id="query" name="query" type="text" class="search-input" placeholder="Search for a score, composer..." value="{{ request('query', '') }}">
+                <div class="w-full flex items-center gap-2">
+                    <div class="relative flex-1">
+                        <input
+                            id="query"
+                            name="query"
+                            type="text"
+                            class="search-input pr-10"
+                            placeholder="Search by title, composer or genre..."
+                            value="{{ request('query', '') }}"
+                        >
+
+                        <button type="submit" class="absolute right-2 inset-y-0 flex items-center text-slate-400 hover:text-slate-200">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </button>
+                    </div>
 
             <!-- Scope select: search in title, composer or both -->
             <label for="scope" class="sr-only">Scope</label>
@@ -49,7 +63,7 @@
 
             <div class="mt-8 flex justify-center">
                 {{ $partitions->appends(request()->except('page'))->links() }}
-
+            </div>
         @else
             <div class="empty-state">
                 <svg class="empty-state-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">

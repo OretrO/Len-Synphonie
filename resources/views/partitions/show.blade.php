@@ -191,5 +191,9 @@
                 @endif
             </aside>
 
-        </div> </div>
+        </div>
+    </div>
+
+    {{-- Delete partition modal --}}
+    <x-modal-delete-partition :partition="$partition" />
 </x-layouts.app>
