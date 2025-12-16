@@ -9,8 +9,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ArrangementController;
-use App\Http\Controllers\Admin\UserManagementController;
-use App\Http\Controllers\Admin\CommentManagementController;
 
 // Routes publiques
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -67,15 +65,4 @@ Route::middleware('auth')->group(function () {
     Route::resource('arrangements', ArrangementController::class)->only([
         'index', 'show', 'create', 'store', 'edit', 'update', 'destroy',
     ]);
-
-    // Admin management routes
-    Route::middleware('can:manage-users')->prefix('admin')->name('admin.')->group(function () {
-        Route::get('/users', [UserManagementController::class, 'index'])->name('users.index');
-        Route::get('/users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
-        Route::put('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
-        Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
-
-        Route::get('/comments', [CommentManagementController::class, 'index'])->name('comments.index');
-        Route::delete('/comments/{comment}', [CommentManagementController::class, 'destroy'])->name('comments.destroy');
-    });
 });
