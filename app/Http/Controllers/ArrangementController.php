@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Arrangement;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class ArrangementController extends Controller
 {
@@ -71,10 +72,22 @@ class ArrangementController extends Controller
 
     public function destroy(Arrangement $arrangement)
     {
+        // 1. Vérification des droits via la Policy
         $this->authorize('delete', $arrangement);
 
+        // 2. Nettoyage du fichier audio s'il existe (éviter les fichiers orphelins)
+        if ($arrangement->audio_file_path && Storage::disk('public')->exists($arrangement->audio_file_path)) {
+            Storage::disk('public')->delete($arrangement->audio_file_path);
+        }
+
+        // 3. Sauvegarder l'ID de la partition pour la redirection
+        $partitionId = $arrangement->partition_id;
+
+        // 4. Suppression en base de données
         $arrangement->delete();
 
-        return redirect()->route('arrangements.index');
+        // 5. Redirection vers la page de la partition (plus logique que l'index des arrangements)
+        return redirect()->route('partitions.show', $partitionId)
+            ->with('success', 'Arrangement supprimé avec succès.');
     }
 }
