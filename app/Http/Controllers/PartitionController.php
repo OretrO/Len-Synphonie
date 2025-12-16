@@ -14,7 +14,7 @@ class PartitionController extends Controller
      */
     public function index()
     {
-        $partitions = Partition::latest()->paginate(12);
+        $partitions = Partition::withCount('arrangements')->latest()->paginate(12);
 
         return view('partitions.index', compact('partitions'));
     }
@@ -155,7 +155,7 @@ class PartitionController extends Controller
         $composerFilter = trim((string) $request->input('composer'));
         $scope = $request->input('scope', 'all');
 
-        $qb = Partition::with('user');
+        $qb = Partition::with('user')->withCount('arrangements');
 
         if ($query !== '') {
             if ($scope === 'title') {
