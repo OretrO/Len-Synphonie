@@ -21,28 +21,23 @@ class DatabaseSeeder extends Seeder
 
         // UTILISATEURS DE TEST (credentials connus pour tester les rôles)
         $admin = User::factory()->admin()->create([
-            'name' => 'Admin User',
-            'email' => 'admin@lensymphony.com',
-            'password' => bcrypt('password'), // Mot de passe : password
+            'name' => 'Robert Manitou',
+            'email' => 'Robert.Manitou@domain.fr',
+            'password' => bcrypt('GrosSecret25'), // Mot de passe : password
         ]);
 
         $arranger = User::factory()->arranger()->create([
-            'name' => 'Arranger Test',
-            'email' => 'arranger@lensymphony.com',
-            'password' => bcrypt('password'), // Mot de passe : password
+            'name' => 'Gerard Getta',
+            'email' => 'Gerard.Getta@domain.fr',
+            'password' => bcrypt('GrosSecret25'), // Mot de passe : password
         ]);
 
         $user = User::factory()->user()->create([
-            'name' => 'User Test',
-            'email' => 'user@lensymphony.com',
-            'password' => bcrypt('password'), // Mot de passe : password
+            'name' => 'Jean Lepetit',
+            'email' => 'Jean.Lepetit@domain.fr',
+            'password' => bcrypt('GrosSecret25'), // Mot de passe : password
         ]);
 
-        $visitor = User::factory()->visitor()->create([
-            'name' => 'Visitor Test',
-            'email' => 'visitor@lensymphony.com',
-            'password' => bcrypt('password'), // Mot de passe : password
-        ]);
 
         // Autres utilisateurs aléatoires
         $arrangers = User::factory()->arranger()->count(4)->create();

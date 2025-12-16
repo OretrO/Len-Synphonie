@@ -1,4 +1,5 @@
 <x-layouts.aut title="Sign Up">
+    @section('content')
     <x-auth.card>
         <x-slot name="header">
             <div class="flex items-center justify-between mb-6">

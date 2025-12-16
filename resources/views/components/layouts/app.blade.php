@@ -9,7 +9,7 @@
 <body class="app-shell {{ request()->routeIs('home') ? 'studio-mode' : '' }}">
 
 {{-- Sidebar navigation --}}
-@include('components.sidebar')
+<x-sidebar />
 
 {{-- Profil utilisateur en haut à droite --}}
 @auth
@@ -23,15 +23,20 @@
 
         <div class="relative user-dropdown-container">
             <div class="navbar-user">
-                @if(auth()->user()->avatar && auth()->user()->avatar !== 'avatars/default.svg')
-                    <img src="{{ asset('storage/' . auth()->user()->avatar) }}" alt="Avatar" class="navbar-avatar">
-                @else
-                    <div class="navbar-avatar flex items-center justify-center">
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                        </svg>
-                    </div>
-                @endif
+                @php
+                    $avatar = auth()->user()->avatar;
+                    $avatarPath = $avatar && $avatar !== 'avatars/default.svg' ? asset('storage/' . $avatar) : null;
+                @endphp
+
+                <div class="navbar-avatar flex items-center justify-center overflow-hidden">
+                    @if($avatarPath)
+                        <img src="{{ $avatarPath }}" alt="" class="w-full h-full object-cover" aria-hidden="true" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    @endif
+                    <svg class="w-5 h-5 {{ $avatarPath ? 'hidden' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                    </svg>
+                </div>
+
                 <span class="navbar-username hidden md:inline">{{ auth()->user()->name }}</span>
                 <svg class="navbar-dropdown-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -140,7 +145,7 @@
     {{ $slot }}
 </main>
 
-@include('components.footer')
+<x-footer />
 
 {{-- Navigation mobile (visible seulement sur mobile) --}}
 <nav class="mobile-bottom-nav md:hidden">
@@ -150,14 +155,14 @@
         </svg>
         <span>Home</span>
     </a>
-    
+
     <a href="{{ route('partitions.index') }}" class="mobile-nav-link {{ request()->routeIs('partitions.*') ? 'active' : '' }}">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
         </svg>
         <span>Scores</span>
     </a>
-    
+
     @auth
         @if(in_array(auth()->user()->role, ['arranger', 'admin']))
             <a href="{{ route('partitions.create') }}" class="mobile-nav-link">
@@ -167,7 +172,7 @@
                 <span>Create</span>
             </a>
         @endif
-        
+
         <a href="{{ route('profile.show') }}" class="mobile-nav-link {{ request()->routeIs('profile.*') ? 'active' : '' }}">
             <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
