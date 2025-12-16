@@ -24,16 +24,13 @@ class Arrangement extends Model
     ];
 
     /**
-     * Get the attributes that should be cast.
+     * The attributes that should be cast.
      *
-     * @return array<string, string>
+     * @var array<string, string>
      */
-    protected function casts(): array
-    {
-        return [
-            'instruments_config' => 'array',
-        ];
-    }
+    protected $casts = [
+        'instruments_config' => 'array',
+    ];
 
     /**
      * Get the partition that owns the arrangement.
@@ -106,4 +103,3 @@ class Arrangement extends Model
         return $this->appreciations()->where('is_like', false)->count();
     }
 }
-
