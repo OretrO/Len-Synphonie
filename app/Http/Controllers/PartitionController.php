@@ -40,8 +40,12 @@ class PartitionController extends Controller
         $this->authorize('create', Partition::class);
 
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'composer' => ['nullable', 'string', 'max:255'],
+            'title' => 'required|string|min:5|max:50',
+            'composer' => 'required|string|min:5|max:50',
+            'genre' => 'required|string|max:20',
+            'description' => 'nullable|string|max:500',
+            'xml_file' => 'required|file|extensions:xml,musicxml', // Laravel 12 syntaxe simplifiée
+            'pdf_file' => 'required|file|mimes:pdf',
         ]);
 
         // Upload du fichier MusicXML
