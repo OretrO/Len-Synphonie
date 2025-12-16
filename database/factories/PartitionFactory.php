@@ -27,8 +27,14 @@ class PartitionFactory extends Factory
     {
         return [
             'title' => fake()->sentence(3),
+
             'composer' => fake()->optional(0.8)->name(),
             'musicxml_file_path' => 'partitions/' . fake()->uuid() . '.musicxml',
+            'musicpdf_file_path' => fake()->optional(0.5, null)->randomElement([
+                'partitions/' . fake()->uuid() . '.pdf',
+                null,
+            ]),
+            'genre' => fake()->randomElement(['Pop', 'Blues', 'Rap', 'Rock', 'classique']),
             // user_id will be set in the seeder
         ];
     }

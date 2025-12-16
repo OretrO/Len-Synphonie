@@ -18,15 +18,28 @@
                 @csrf
                 @method('PUT')
 
-                <div class="flex items-center gap-6">
-                    <div class="w-28 h-28 rounded-full overflow-hidden border-2 relative flex items-center justify-center" style="border-color: var(--color-border); background: var(--color-surface);">
+                <div class="flex items-start gap-6">
+                    <div class="flex flex-col items-center gap-3">
+                        <div class="w-28 h-28 rounded-full overflow-hidden border-2 relative flex items-center justify-center" style="border-color: var(--color-border); background: var(--color-surface);">
+                            @if($avatarPath)
+                                <img src="{{ $avatarPath }}" alt="Avatar" class="w-full h-full object-cover" id="avatarPreviewImg" onerror="this.style.display='none'; document.getElementById('avatarPreviewSvg').style.display='flex';">
+                            @endif
+                            <svg id="avatarPreviewSvg" class="w-full h-full p-4 {{ $avatarPath ? 'hidden' : '' }}" style="color: var(--color-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                            </svg>
+                            <input type="file" name="avatar" id="avatarInput" class="absolute inset-0 opacity-0 cursor-pointer z-10" accept="image/png,image/jpeg,image/jpg" onchange="previewAvatar(this)">
+                        </div>
+
+                        <button type="button" class="btn btn-outline btn-xs" onclick="document.getElementById('avatarInput').click();">
+                            Edit avatar
+                        </button>
+
                         @if($avatarPath)
-                            <img src="{{ $avatarPath }}" alt="Avatar" class="w-full h-full object-cover" id="avatarPreviewImg" onerror="this.style.display='none'; document.getElementById('avatarPreviewSvg').style.display='flex';">
+                            <label class="flex items-center gap-2 text-xs text-slate-400 cursor-pointer">
+                                <input type="checkbox" name="remove_avatar" value="1" class="rounded border-slate-600 bg-slate-800">
+                                <span>Remove current avatar</span>
+                            </label>
                         @endif
-                        <svg id="avatarPreviewSvg" class="w-full h-full p-4 {{ $avatarPath ? 'hidden' : '' }}" style="color: var(--color-text-muted);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                        </svg>
-                        <input type="file" name="avatar" id="avatarInput" class="absolute inset-0 opacity-0 cursor-pointer z-10" accept="image/png,image/jpeg,image/jpg" onchange="previewAvatar(this)">
                     </div>
 
                     <div class="flex-1">

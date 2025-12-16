@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->string('composer')->nullable();
+            $table->string('genre')->nullable();
+            $table->text('description')->nullable();
             $table->string('musicxml_file_path');
             $table->string('musicpdf_file_path')->nullable();
             $table->foreignId('user_id')->constrained()->onDelete('cascade');

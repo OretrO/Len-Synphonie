@@ -20,6 +20,7 @@ class Partition extends Model
         'musicxml_file_path',
         'musicpdf_file_path',
         'user_id',
+        'genre',
     ];
 
     /**
@@ -38,4 +39,3 @@ class Partition extends Model
         return $this->hasMany(Arrangement::class);
     }
 }
-

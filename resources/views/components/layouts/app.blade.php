@@ -56,14 +56,14 @@
                     My Profile
                 </a>
 
-                @if(in_array(auth()->user()->role, ['arranger', 'admin']))
-                    <a href="{{ route('partitions.index') }}" class="dropdown-item">
+                @can('manage-users')
+                    <a href="{{ route('admin.manage') }}" class="dropdown-item">
                         <svg class="w-4 h-4 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        My Scores
+                        Manage
                     </a>
-                @endif
+                @endcan
 
                 <div class="border-t mt-1 pt-1" style="border-color: var(--color-border);">
                     <form method="POST" action="{{ route('logout') }}">
