@@ -26,8 +26,8 @@ class ArrangementController extends Controller
         return view('arrangements.index', compact('arrangements'));
     }
 
-    // Show create form for a given partition
-    public function create(Partition $partition)
+    // Show create form for a given partition OR global create (partition optional)
+    public function create(Partition $partition = null)
     {
         $user = Auth::user();
         if (!($user instanceof \App\Models\User) || !in_array($user->role, ['arranger', 'admin'])) {
@@ -36,15 +36,27 @@ class ArrangementController extends Controller
 
         $instruments = Instrument::orderBy('name')->get();
 
-        return view('arrangements.create', compact('partition', 'instruments'));
+        if ($partition) {
+            return view('arrangements.create', compact('partition', 'instruments'));
+        }
+
+        // Global create: pass list of partitions to choose from
+        $partitions = Partition::orderBy('title')->get();
+        return view('arrangements.create', compact('partitions', 'instruments'));
     }
 
-    // Store new arrangement (nested to partition)
-    public function store(Request $request, Partition $partition)
+    // Store new arrangement (nested to partition or global)
+    public function store(Request $request, Partition $partition = null)
     {
         $user = Auth::user();
         if (!($user instanceof \App\Models\User) || !in_array($user->role, ['arranger', 'admin'])) {
             abort(403);
+        }
+
+        // If partition not provided via route, expect partition_id in request
+        if (!$partition) {
+            $request->validate(['partition_id' => ['required', 'integer', 'exists:partitions,id']]);
+            $partition = Partition::findOrFail($request->input('partition_id'));
         }
 
         $rules = [

@@ -110,8 +110,33 @@
                 <div class="card">
                     <h3 class="card-title text-xl font-bold mb-4">Arrangements</h3>
 
+                    {{-- Player: choisir un arrangement et jouer son fichier audio --}}
                     @if($partition->arrangements && $partition->arrangements->count())
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="mb-4 bg-slate-800 p-4 rounded border border-slate-700">
+                            <label class="text-sm text-slate-300 font-semibold">Écouter un arrangement</label>
+                            <div class="flex items-center gap-3 mt-2">
+                                <select id="arrangement-select" class="form-input w-full md:w-2/3">
+                                    <option value="">-- Choisir un arrangement --</option>
+                                    @foreach($partition->arrangements as $arr)
+                                        <option value="{{ $arr->id }}" data-audio="{{ $arr->audio_file_path ? asset($arr->audio_file_path) : '' }}" data-status="{{ $arr->status }}">{{ $arr->name }} @if($arr->status) ({{ $arr->status }}) @endif</option>
+                                    @endforeach
+                                </select>
+
+                                <button id="arr-play-btn" class="btn btn-primary" disabled>Play</button>
+                                <button id="arr-pause-btn" class="btn btn-outline hidden">Pause</button>
+                                <a id="arr-download" href="#" class="btn btn-outline ml-2 hidden" download>Download</a>
+                            </div>
+
+                            <div class="mt-3">
+                                <audio id="partition-player" class="w-full" preload="none"></audio>
+                            </div>
+
+                            <p id="arr-player-note" class="text-xs text-slate-400 mt-2">Sélectionnez un arrangement pour activer le lecteur. Si aucun fichier audio n'est disponible, l'option restera désactivée.</p>
+                        </div>
+                    @endif
+
+                    @if($partition->arrangements && $partition->arrangements->count())
+                        <div class="arrangements-list mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach($partition->arrangements as $arrangement)
                                 <div class="bg-slate-800 p-4 rounded border border-slate-700 flex flex-col justify-between h-full">
 
@@ -252,3 +277,67 @@
     {{-- Delete partition modal --}}
     <x-modal-delete-partition :partition="$partition" />
 </x-layouts.app>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectElement = document.getElementById('arrangement-select');
+        const playButton = document.getElementById('arr-play-btn');
+        const pauseButton = document.getElementById('arr-pause-btn');
+        const downloadLink = document.getElementById('arr-download');
+        const audioPlayer = document.getElementById('partition-player');
+
+        let currentAudioSrc = '';
+        let isPlaying = false;
+        let currentArrangementId = '';
+
+        // Fonction pour mettre à jour l'état du lecteur audio
+        function updatePlayerState() {
+            if (currentAudioSrc && isPlaying) {
+                audioPlayer.src = currentAudioSrc;
+                audioPlayer.play();
+                playButton.classList.add('hidden');
+                pauseButton.classList.remove('hidden');
+            } else {
+                audioPlayer.pause();
+                playButton.classList.remove('hidden');
+                pauseButton.classList.add('hidden');
+            }
+        }
+
+        // Écouteur d'événements pour le changement de sélection d'arrangement
+        selectElement.addEventListener('change', function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const audioSrc = selectedOption.getAttribute('data-audio');
+            const status = selectedOption.getAttribute('data-status');
+
+            currentArrangementId = this.value;
+            currentAudioSrc = audioSrc;
+
+            // Activer ou désactiver le bouton de lecture et le lien de téléchargement
+            if (currentArrangementId && audioSrc) {
+                playButton.disabled = false;
+                downloadLink.classList.remove('hidden');
+                downloadLink.href = audioSrc;
+            } else {
+                playButton.disabled = true;
+                downloadLink.classList.add('hidden');
+            }
+
+            // Mettre à jour l'état du lecteur audio
+            updatePlayerState();
+        });
+
+        // Écouteur d'événements pour le bouton de lecture
+        playButton.addEventListener('click', function () {
+            isPlaying = true;
+            updatePlayerState();
+        });
+
+        // Écouteur d'événements pour le bouton de pause
+        pauseButton.addEventListener('click', function () {
+            isPlaying = false;
+            updatePlayerState();
+        });
+    });
+</script>
+
