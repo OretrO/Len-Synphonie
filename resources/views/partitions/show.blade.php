@@ -139,71 +139,7 @@
                     @if($partition->arrangements && $partition->arrangements->count())
                         <div class="arrangements-list mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach($partition->arrangements as $arrangement)
-                                <div class="partition-card p-4">
-                                    <div class="flex items-start justify-between">
-                                        <div>
-                                            <h4 class="font-semibold">{{ $arrangement->name }}</h4>
-                                            <p class="text-xs text-slate-400">Status: <strong class="text-slate-200">{{ $arrangement->status }}</strong></p>
-                                            <p class="text-xs text-slate-400">By: {{ $arrangement->creator?->name ?? '—' }}</p>
-                                        </div>
-                                        <div class="text-xs text-slate-400">{{ $arrangement->created_at->diffForHumans() }}</div>
-                                    </div>
-
-                                    @php
-                                        $cfg = [];
-                                        $raw = $arrangement->instruments_config ?? null;
-
-                                        // Normalize Collections
-                                        if ($raw instanceof \Illuminate\Support\Collection) {
-                                            $raw = $raw->toArray();
-                                        }
-
-                                        // If it's already an array, use it
-                                        if (is_array($raw)) {
-                                            $cfg = $raw;
-                                        }
-
-                                        // If it's a non-empty string, try to decode JSON safely
-                                        if (is_string($raw) && strlen(trim($raw)) > 0) {
-                                            $decoded = @json_decode($raw, true);
-                                            if (is_array($decoded)) {
-                                                $cfg = $decoded;
-                                            }
-                                        }
-                                    @endphp
-
-                                    @if(count($cfg))
-                                        <div class="mt-3">
-                                            <h5 class="text-sm font-semibold">Instruments</h5>
-                                            <ul class="text-sm text-slate-400 mt-2 space-y-1">
-                                                @foreach($cfg as $inst)
-                                                    <li>{{ $inst['name'] ?? 'Instrument' }} — vol: {{ $inst['volume'] ?? '—' }} — pan: {{ $inst['pan'] ?? 0 }}</li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                    @endif
-
-                                    @if(!empty($arrangement->audio_file_path))
-                                        <div class="mt-3">
-                                            <audio controls src="{{ asset($arrangement->audio_file_path) }}" class="w-full">Your browser does not support the audio element.</audio>
-                                        </div>
-                                    @endif
-
-                                    <div class="mt-3 flex items-center gap-2">
-                                        @if(\Illuminate\Support\Facades\Route::has('arrangements.show'))
-                                            <a href="{{ route('arrangements.show', $arrangement) }}" class="btn btn-outline btn-small">Open</a>
-                                        @else
-                                            <span class="btn btn-outline btn-small opacity-50 cursor-not-allowed">Open</span>
-                                        @endif
-                                        @auth
-                                            @if($currentUser instanceof \App\Models\User && ($currentUser->id === ($arrangement->creator_id ?? null) || $currentUser->role === 'admin'))
-                                                @if(\Illuminate\Support\Facades\Route::has('arrangements.edit'))
-                                                    <a href="{{ route('arrangements.edit', $arrangement) }}" class="btn btn-outline btn-small">Edit</a>
-                                                @endif
-                                            @endif
-                                        @endauth
-                                    </div>
-                                </div>
+                                <x-card-arrangement :arrangement="$arrangement" :current-user="$currentUser" />
                             @endforeach
                         </div>
                     @else
