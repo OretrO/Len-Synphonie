@@ -38,6 +38,37 @@ Route::get('/partitions', [PartitionController::class, 'index'])->name('partitio
 // Route de recherche publique pour les partitions
 Route::get('/partitions/search', [PartitionController::class, 'Search'])->name('partitions.search');
 
+// Routes publiques pour les fichiers audio - EXPLICITEMENT EN DEHORS DE LA ROUTE CATCHALL
+Route::middleware('web')->group(function () {
+    // Route pour streamer/jouer les fichiers audio
+    Route::get('/audio/{arrangementId}/{filename}', function ($arrangementId, $filename) {
+        $path = storage_path("app/public/arrangements/{$arrangementId}/{$filename}");
+
+        if (!file_exists($path)) {
+            abort(404, "Audio file not found");
+        }
+
+        return response()->file($path, [
+            'Content-Type' => 'audio/wav',
+            'Content-Disposition' => 'inline; filename="' . $filename . '"',
+            'Cache-Control' => 'public, max-age=3600',
+        ]);
+    })->name('audio.stream');
+
+    // Route pour télécharger les fichiers audio
+    Route::get('/download/audio/{arrangementId}/{filename}', function ($arrangementId, $filename) {
+        $path = storage_path("app/public/arrangements/{$arrangementId}/{$filename}");
+
+        if (!file_exists($path)) {
+            abort(404, "Audio file not found");
+        }
+
+        return response()->download($path, $filename, [
+            'Content-Type' => 'audio/wav',
+        ]);
+    })->name('audio.download');
+});
+
 // Routes nécessitant une authentification (user, arranger, admin)
 Route::middleware('auth')->group(function () {
 
@@ -47,16 +78,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/partitions/create', [PartitionController::class, 'create'])->name('partitions.create');
     Route::post('/partitions', [PartitionController::class, 'store'])->name('partitions.store');
 
+    // Fichiers de partition (PDF/XML)
+    Route::get('/partitions/{partition}/file', [PartitionController::class, 'downloadFile'])->name('partitions.file');
+
     // --- 2. ROUTES AVEC VARIABLES (WILDCARDS) ---
 
     // Détails d'une partition (Celle-ci "mange" tout ce qui suit /partitions/...)
     Route::get('/partitions/{partition}', [PartitionController::class, 'show'])->name('partitions.show');
-    // Route pour servir les fichiers (PDF/XML) sans lien symbolique
-    Route::get('/partitions/{partition}/file/{type}', [PartitionController::class, 'downloadFile'])->name('partitions.file');
-
-    // Création et stockage d'arrangements liés à une partition (nested)
-    Route::get('/partitions/{partition}/arrangements/create', [ArrangementController::class, 'create'])->name('partitions.arrangements.create');
-    Route::post('/partitions/{partition}/arrangements', [ArrangementController::class, 'store'])->name('partitions.arrangements.store');
 
     // Modification et Suppression
     Route::get('/partitions/{partition}/edit', [PartitionController::class, 'edit'])->name('partitions.edit');

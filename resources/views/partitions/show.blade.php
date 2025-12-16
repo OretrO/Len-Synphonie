@@ -149,23 +149,6 @@
                                     {{ $arrangement->status }}
                                 </span>
                                             @endif
-                                        </div>
-
-                                        <div class="text-xs text-slate-400 mt-2 flex flex-col gap-1">
-                                            <span>Arrangeur : {{ $arrangement->creator->name ?? 'Inconnu' }}</span>
-                                            <span>Date : {{ $arrangement->created_at->format('d/m/Y') }}</span>
-                                            {{-- Si la méthode likesCount existe --}}
-                                            @if(method_exists($arrangement, 'likesCount'))
-                                                <span>Popularité : {{ $arrangement->likesCount() }} likes</span>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    {{-- Actions (Boutons) --}}
-                                    <div class="mt-4 flex items-center gap-2 pt-3 border-t border-slate-700">
-
-                                        {{-- Bouton VOIR --}}
-                                        <a href="{{ route('arrangements.show', $arrangement) }}" class="btn btn-outline btn-small text-xs px-3 py-1">
                                             Voir
                                         </a>
 

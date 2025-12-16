@@ -317,3 +317,4 @@ instruments ||..o{ arrangement_instruments : "instrument_id"
 - Attribut additionnel : is_like (true = like, false = dislike)
 - Contrainte unique sur (user_id, arrangement_id)
 
+

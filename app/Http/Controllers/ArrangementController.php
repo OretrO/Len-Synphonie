@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use App\Models\Arrangement;
 use App\Models\Partition;
 use App\Models\Instrument;
+use App\Jobs\GenerateArrangementAudio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Bus;
 
 class ArrangementController extends Controller
 {
@@ -85,8 +87,10 @@ class ArrangementController extends Controller
         }
         $arrangement->instruments()->sync($sync);
 
-        // Placeholder: dispatch background job to generate WAV
-        Log::info('Arrangement created, dispatch job to generate audio', ['arrangement_id' => $arrangement->id]);
+        // Dispatch background job to generate WAV
+        dispatch(new GenerateArrangementAudio($arrangement));
+
+        Log::info('Arrangement created, audio generation job dispatched', ['arrangement_id' => $arrangement->id]);
 
         return redirect()->route('partitions.show', $partition)->with('success', 'Arrangement created and audio generation queued.');
     }
@@ -135,8 +139,10 @@ class ArrangementController extends Controller
         }
         $arrangement->instruments()->sync($sync);
 
-        // Log / dispatch regeneration job
-        Log::info('Arrangement updated, dispatch regeneration job', ['arrangement_id' => $arrangement->id]);
+        // Dispatch regeneration job
+        dispatch(new GenerateArrangementAudio($arrangement));
+
+        Log::info('Arrangement updated, audio regeneration job dispatched', ['arrangement_id' => $arrangement->id]);
 
         return redirect()->route('arrangements.show', $arrangement)->with('success', 'Arrangement updated and audio regeneration queued.');
     }
