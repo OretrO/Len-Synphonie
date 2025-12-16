@@ -52,6 +52,10 @@ Route::middleware('auth')->group(function () {
     // Détails d'une partition (Celle-ci "mange" tout ce qui suit /partitions/...)
     Route::get('/partitions/{partition}', [PartitionController::class, 'show'])->name('partitions.show');
 
+    // Création et stockage d'arrangements liés à une partition (nested)
+    Route::get('/partitions/{partition}/arrangements/create', [ArrangementController::class, 'create'])->name('partitions.arrangements.create');
+    Route::post('/partitions/{partition}/arrangements', [ArrangementController::class, 'store'])->name('partitions.arrangements.store');
+
     // Modification et Suppression
     Route::get('/partitions/{partition}/edit', [PartitionController::class, 'edit'])->name('partitions.edit');
     Route::put('/partitions/{partition}', [PartitionController::class, 'update'])->name('partitions.update');
