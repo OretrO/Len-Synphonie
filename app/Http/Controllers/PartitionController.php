@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Partition;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class PartitionController extends Controller
 {
@@ -167,5 +168,36 @@ class PartitionController extends Controller
         $partitions = $qb->latest()->paginate(12);
 
         return view('partitions.index', compact('partitions'));
+    }
+    /**
+     * Get the arrangements for the partition.
+     */
+    public function arrangements()
+    {
+        return $this->hasMany(Arrangement::class);
+    }
+
+    /**
+     * Download the associated file (PDF or XML).
+     */
+    public function downloadFile(Partition $partition, string $type)
+    {
+        $this->authorize('view', $partition);
+
+        if ($type === 'pdf') {
+            $path = $partition->musicpdf_file_path;
+            if (!$path || !Storage::disk('public')->exists($path)) {
+                abort(404, 'PDF file not found.');
+            }
+            return Storage::disk('public')->response($path);
+        } elseif ($type === 'xml') {
+            $path = $partition->musicxml_file_path;
+            if (!$path || !Storage::disk('public')->exists($path)) {
+                abort(404, 'XML file not found.');
+            }
+            return Storage::disk('public')->download($path);
+        }
+
+        abort(404);
     }
 }
