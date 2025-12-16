@@ -5,6 +5,9 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PartitionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\ArrangementController;
 
 // Routes publiques
@@ -17,24 +20,6 @@ Route::view('/contact', 'pages.contact')->name('contact');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
-// Route de connexion temporaire
-Route::get('/login', function () {
-    return redirect()->route('home');
-})->name('login');
-
-// Routes des partitions
-Route::resource('partitions', PartitionController::class)->only(['index', 'show']);
-
-// Routes protégées par authentification
-Route::middleware('auth')->group(function () {
-    Route::resource('partitions', PartitionController::class)->only([
-        'create', 'store', 'edit', 'update', 'destroy',
-    ]);
-
-    Route::resource('arrangements', ArrangementController::class)->only([
-        'index', 'show', 'create', 'store', 'edit', 'update', 'destroy',
-    ]);
-});
 // Routes de reset de mot de passe
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
@@ -63,5 +48,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/partitions/{partition}/edit', [PartitionController::class, 'edit'])->name('partitions.edit');
     Route::put('/partitions/{partition}', [PartitionController::class, 'update'])->name('partitions.update');
     Route::delete('/partitions/{partition}', [PartitionController::class, 'destroy'])->name('partitions.destroy');
-});
 
+    Route::resource('arrangements', ArrangementController::class)->only([
+        'index', 'show', 'create', 'store', 'edit', 'update', 'destroy',
+    ]);
+});
