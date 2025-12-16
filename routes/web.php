@@ -5,9 +5,10 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PartitionController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\ResetPasswordController;
-use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\ArrangementController;
 
 // Routes publiques
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -35,19 +36,24 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Routes des partitions (accessibles à tous - visitor peut voir la liste)
 Route::get('/partitions', [PartitionController::class, 'index'])->name('partitions.index');
 
-// Routes pour arrangers et admins (création, modification, suppression)
-Route::middleware(['auth'])->group(function () {
+// Routes nécessitant une authentification (user, arranger, admin)
+Route::middleware('auth')->group(function () {
+    // Détails d'une partition
+    Route::get('/partitions/{partition}', [PartitionController::class, 'show'])->name('partitions.show');
+
+    // Profil utilisateur
+    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
+    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+
+    // Routes pour arrangers et admins (création, modification, suppression)
     Route::get('/partitions/create', [PartitionController::class, 'create'])->name('partitions.create');
     Route::post('/partitions', [PartitionController::class, 'store'])->name('partitions.store');
     Route::get('/partitions/{partition}/edit', [PartitionController::class, 'edit'])->name('partitions.edit');
     Route::put('/partitions/{partition}', [PartitionController::class, 'update'])->name('partitions.update');
     Route::delete('/partitions/{partition}', [PartitionController::class, 'destroy'])->name('partitions.destroy');
 
-    // Voir un partition (auth requis)
-    Route::get('/partitions/{partition}', [PartitionController::class, 'show'])->name('partitions.show');
-
-    // Profil - affichage, edition, mise à jour
-    Route::get('/profile', [ProfileController::class, 'show'])->name('profile.show');
-    Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::resource('arrangements', ArrangementController::class)->only([
+        'index', 'show', 'create', 'store', 'edit', 'update', 'destroy',
+    ]);
 });

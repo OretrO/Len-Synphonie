@@ -1,20 +1,18 @@
-<x-layouts.app>
-    <x-slot:title>{{ $partition->title }}</x-slot:title>
-
+<x-layouts.app title="{{ $partition->title }} - LenSymphony">
     <div class="page-container">
-        <div class="partition-header">
-            <h1 class="partition-title">{{ $partition->title }}</h1>
+        <div class="card">
+            <h1 class="card-title">Score details</h1>
 
             @auth
                 @if(auth()->user()->id === $partition->user_id || auth()->user()->role === 'admin')
                     <div class="partition-actions">
                         <a href="{{ route('partitions.edit', $partition) }}" class="btn btn-outline">
-                            Edit
+                            Modifier
                         </a>
-                        <form action="{{ route('partitions.destroy', $partition) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this score?');">
+                        <form action="{{ route('partitions.destroy', $partition) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette partition ?');">
                             @csrf
                             @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Delete</button>
+                            <button type="submit" class="btn btn-danger">Supprimer</button>
                         </form>
                     </div>
                 @endif

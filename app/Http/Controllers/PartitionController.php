@@ -13,19 +13,21 @@ class PartitionController extends Controller
      */
     public function index()
     {
-        $partitions = Partition::with('user')->latest()->paginate(12);
+        $partitions = Partition::latest()->paginate(12);
+
         return view('partitions.index', compact('partitions'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
+    public function show(Partition $partition)
+    {
+        $this->authorize('view', $partition);
+
+        return view('partitions.show', compact('partition'));
+    }
+
     public function create()
     {
-        // Vérifier que l'utilisateur est arranger ou admin
-        if (!in_array(Auth::user()->role, ['arranger', 'admin'])) {
-            abort(403, 'Accès refusé. Seuls les arrangers et admins peuvent créer des partitions.');
-        }
+        $this->authorize('create', Partition::class);
 
         return view('partitions.create');
     }
@@ -35,38 +37,22 @@ class PartitionController extends Controller
      */
     public function store(Request $request)
     {
-        // Vérifier que l'utilisateur est arranger ou admin
-        if (!in_array(Auth::user()->role, ['arranger', 'admin'])) {
-            abort(403, 'Accès refusé.');
-        }
+        $this->authorize('create', Partition::class);
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'composer' => 'nullable|string|max:255',
-            'musicxml_file' => 'required|file|mimes:xml,musicxml|max:10240',
+            'title' => ['required', 'string', 'max:255'],
+            'composer' => ['nullable', 'string', 'max:255'],
         ]);
 
         // Upload du fichier MusicXML
         $path = $request->file('musicxml_file')->store('partitions', 'public');
 
         $partition = Partition::create([
-            'title' => $validated['title'],
-            'composer' => $validated['composer'],
-            'musicxml_file_path' => $path,
-            'user_id' => Auth::id(),
+            ...$validated,
+            'user_id' => $request->user()->id,
         ]);
 
-        return redirect()->route('partitions.show', $partition)
-            ->with('success', 'Partition créée avec succès !');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Partition $partition)
-    {
-        $partition->load(['user', 'arrangements']);
-        return view('partitions.show', compact('partition'));
+        return redirect()->route('partitions.show', $partition);
     }
 
     /**
@@ -74,10 +60,7 @@ class PartitionController extends Controller
      */
     public function edit(Partition $partition)
     {
-        // Vérifier les permissions : propriétaire ou admin
-        if (Auth::user()->id !== $partition->user_id && Auth::user()->role !== 'admin') {
-            abort(403, 'Vous ne pouvez modifier que vos propres partitions.');
-        }
+        $this->authorize('update', $partition);
 
         return view('partitions.edit', compact('partition'));
     }
@@ -87,27 +70,14 @@ class PartitionController extends Controller
      */
     public function update(Request $request, Partition $partition)
     {
-        // Vérifier les permissions : propriétaire ou admin
-        if (Auth::user()->id !== $partition->user_id && Auth::user()->role !== 'admin') {
-            abort(403, 'Vous ne pouvez modifier que vos propres partitions.');
-        }
+        $this->authorize('update', $partition);
 
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'composer' => 'nullable|string|max:255',
-            'musicxml_file' => 'nullable|file|mimes:xml,musicxml|max:10240',
+            'title' => ['required', 'string', 'max:255'],
+            'composer' => ['nullable', 'string', 'max:255'],
         ]);
 
-        $partition->title = $validated['title'];
-        $partition->composer = $validated['composer'];
-
-        // Si un nouveau fichier est uploadé
-        if ($request->hasFile('musicxml_file')) {
-            $path = $request->file('musicxml_file')->store('partitions', 'public');
-            $partition->musicxml_file_path = $path;
-        }
-
-        $partition->save();
+        $partition->update($validated);
 
         return redirect()->route('partitions.show', $partition)
             ->with('success', 'Partition mise à jour avec succès !');
@@ -118,15 +88,10 @@ class PartitionController extends Controller
      */
     public function destroy(Partition $partition)
     {
-        // Vérifier les permissions : propriétaire ou admin
-        if (Auth::user()->id !== $partition->user_id && Auth::user()->role !== 'admin') {
-            abort(403, 'Vous ne pouvez supprimer que vos propres partitions.');
-        }
+        $this->authorize('delete', $partition);
 
         $partition->delete();
 
-        return redirect()->route('partitions.index')
-            ->with('success', 'Partition supprimée avec succès !');
+        return redirect()->route('partitions.index');
     }
 }
-
