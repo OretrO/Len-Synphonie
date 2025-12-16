@@ -1,40 +1,25 @@
-<x-layouts.app title="Create arrangement - LenSymphony">
+<x-layouts.app>
+    <x-slot:title>Create Arrangement</x-slot:title>
+
     <div class="page-container">
+        <div class="page-header">
+            <div class="page-header-inner">
+                @if(!empty($partition))
+                    <h1 class="page-header-title">Créer un arrangement pour : {{ $partition->title }}</h1>
+                    <p class="home-section-sub">Remplissez les champs ci-dessous pour créer un arrangement (les fichiers audio sont générés en arrière-plan).</p>
+                @else
+                    <h1 class="page-header-title">Créer un arrangement</h1>
+                    <p class="home-section-sub">Sélectionnez une partition et définissez les instruments pour chaque piste.</p>
+                @endif
+            </div>
+        </div>
+
         <div class="card">
-            <h1 class="card-title">Create a new arrangement</h1>
-
-            <form action="{{ route('arrangements.store') }}" method="POST" class="form">
-                @csrf
-
-                <div class="form-field">
-                    <label for="partition_id" class="form-label">Partition ID</label>
-                    <input
-                        type="number"
-                        name="partition_id"
-                        id="partition_id"
-                        class="form-input"
-                        value="{{ old('partition_id') }}"
-                        required
-                    >
-                </div>
-
-                <div class="form-field">
-                    <label for="name" class="form-label">Name</label>
-                    <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        class="form-input"
-                        value="{{ old('name') }}"
-                        required
-                    >
-                </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Save</button>
-                </div>
-            </form>
+            @if(!empty($partition))
+                <x-form-arrangement :partition="$partition" :instruments="$instruments" />
+            @else
+                <x-form-arrangement :partitions="$partitions" :instruments="$instruments" />
+            @endif
         </div>
     </div>
 </x-layouts.app>
-

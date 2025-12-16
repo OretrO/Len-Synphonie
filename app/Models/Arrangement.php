@@ -18,9 +18,11 @@ class Arrangement extends Model
         'partition_id',
         'creator_id',
         'name',
+        'description',
         'instruments_config',
         'audio_file_path',
         'status',
+        'audio_generation_error',
     ];
 
     /**

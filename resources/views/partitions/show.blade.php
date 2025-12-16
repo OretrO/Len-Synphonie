@@ -21,12 +21,19 @@
                     @php
                         $author = $partition->user ?? null;
                         // Gestion sécurisée de l'avatar
-                        $avatarPath = ($author && !empty($author->avatar))
-                            ? asset('storage/' . $author->avatar)
-                            : asset('avatars/default.svg'); // Assurez-vous d'avoir une image par défaut
+                        $avatarPath = $author && $author->avatar && $author->avatar !== 'avatars/default.svg'
+                            ? (\Illuminate\Support\Facades\Storage::disk('public')->exists($author->avatar) ? asset('storage/' . $author->avatar) : null)
+                            : null;
                     @endphp
 
-                    <img src="{{ $avatarPath }}" alt="{{ $author->name ?? 'User' }} avatar" class="w-10 h-10 rounded-full object-cover border border-slate-600" />
+                    <div class="w-10 h-10 rounded-full overflow-hidden flex items-center justify-center border border-slate-600 bg-slate-700">
+                        @if($avatarPath)
+                            <img src="{{ $avatarPath }}" alt="{{ $author->name ?? 'User' }} avatar" class="w-full h-full object-cover" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        @endif
+                        <svg class="w-full h-full p-1 {{ $avatarPath ? 'hidden' : '' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                        </svg>
+                    </div>
                     <div>
                         <div class="text-sm font-medium">{{ $author->name ?? 'Unknown' }}</div>
                         <div class="text-xs text-slate-400">@if($author){{ $author->email }}@endif</div>
@@ -51,8 +58,10 @@
 
                     {{-- Bouton Créer Arrangement (Visible si Arrangeur ou Admin) --}}
                     @if($currentUser instanceof \App\Models\User && in_array($currentUser->role, ['arranger', 'admin']))
-                        @if(\Illuminate\Support\Facades\Route::has('arrangements.create'))
-                            <a href="{{ route('arrangements.create', ['partition' => $partition->id]) }}" class="btn btn-primary">Create arrangement</a>
+                        @if(
+                            \Illuminate\Support\Facades\Route::has('partitions.arrangements.create')
+                        )
+                            <a href="{{ route('partitions.arrangements.create', ['partition' => $partition->id]) }}" class="btn btn-primary">Create arrangement</a>
                         @endif
                     @endif
                 @endauth
@@ -80,7 +89,7 @@
 
                             {{-- Fichier PDF (Visuel) --}}
                             @if(!empty($partition->musicpdf_file_path))
-                                <a href="{{ asset('storage/' . $partition->musicpdf_file_path) }}" target="_blank" class="btn btn-primary flex items-center gap-2">
+                                <a href="{{ route('partitions.file', ['partition' => $partition, 'type' => 'pdf']) }}" target="_blank" class="btn btn-primary flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                     View PDF Sheet
                                 </a>
@@ -90,7 +99,7 @@
 
                             {{-- Fichier XML (Source) --}}
                             @if(!empty($partition->musicxml_file_path))
-                                <a href="{{ asset('storage/' . $partition->musicxml_file_path) }}" download class="btn btn-outline flex items-center gap-2">
+                                <a href="{{ route('partitions.file', ['partition' => $partition, 'type' => 'xml']) }}" download class="btn btn-outline flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                     Download MusicXML
                                 </a>
@@ -101,17 +110,89 @@
                 <div class="card">
                     <h3 class="card-title text-xl font-bold mb-4">Arrangements</h3>
 
+                    {{-- Player: choisir un arrangement et jouer son fichier audio --}}
                     @if($partition->arrangements && $partition->arrangements->count())
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="mb-4 bg-slate-800 p-4 rounded border border-slate-700">
+                            <label class="text-sm text-slate-300 font-semibold">Écouter un arrangement</label>
+                            <div class="flex items-center gap-3 mt-2">
+                                <select id="arrangement-select" class="form-input w-full md:w-2/3">
+                                    <option value="">-- Choisir un arrangement --</option>
+                                    @foreach($partition->arrangements as $arr)
+                                        @php
+                                            $arrAudioUrl = '';
+                                            if ($arr->audio_file_path && $arr->status === 'completed') {
+                                                $pathParts = explode('/', $arr->audio_file_path);
+                                                $filename = end($pathParts);
+                                                $arrAudioUrl = route('audio.stream', ['arrangementId' => $arr->id, 'filename' => $filename]);
+                                            }
+                                        @endphp
+                                        <option value="{{ $arr->id }}" data-audio="{{ $arrAudioUrl }}" data-status="{{ $arr->status }}">{{ $arr->name }} @if($arr->status) ({{ $arr->status }}) @endif</option>
+                                    @endforeach
+                                </select>
+
+                                <button id="arr-play-btn" class="btn btn-primary" disabled>Play</button>
+                                <button id="arr-pause-btn" class="btn btn-outline hidden">Pause</button>
+                                <a id="arr-download" href="#" class="btn btn-outline ml-2 hidden" download>Download</a>
+                            </div>
+
+                            <div class="mt-3">
+                                <audio id="partition-player" class="w-full" preload="none"></audio>
+                            </div>
+
+                            <p id="arr-player-note" class="text-xs text-slate-400 mt-2">Sélectionnez un arrangement pour activer le lecteur. Si aucun fichier audio n'est disponible, l'option restera désactivée.</p>
+                        </div>
+                    @endif
+
+                    @if($partition->arrangements && $partition->arrangements->count())
+                        <div class="arrangements-list mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach($partition->arrangements as $arrangement)
-                                <x-card-arrangement :arrangement="$arrangement" :currentUser="$currentUser" />
+                                <div class="bg-slate-800 p-4 rounded border border-slate-700 flex flex-col justify-between h-full">
+
+                                    {{-- Informations de l'arrangement --}}
+                                    <div>
+                                        <div class="flex justify-between items-start">
+                                            <h4 class="font-bold text-white">{{ $arrangement->name ?? 'Sans titre' }}</h4>
+                                            @if(isset($arrangement->status))
+                                                <span class="text-xs px-2 py-0.5 rounded bg-slate-700 text-slate-300">
+                                    {{ $arrangement->status }}
+                                </span>
+                                            @endif
+                                            Voir
+                                        </a>
+
+                                        {{-- Bouton MODIFIER (Si autorisé) --}}
+                                        @can('update', $arrangement)
+                                            <a href="{{ route('arrangements.edit', $arrangement) }}" class="btn btn-outline btn-small text-xs px-3 py-1">
+                                                Éditer
+                                            </a>
+                                        @endcan
+
+                                        {{-- Bouton SUPPRIMER (Si autorisé) --}}
+                                        @can('delete', $arrangement)
+                                            <form action="{{ route('arrangements.destroy', $arrangement) }}"
+                                                  method="POST"
+                                                  class="ml-auto"
+                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet arrangement ? Cette action est irréversible.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 hover:text-red-400 transition p-1" title="Supprimer l'arrangement">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        @endcan
+                                    </div>
+                                </div>
                             @endforeach
                         </div>
                     @else
                         <div class="text-center py-8 bg-slate-800/50 rounded-lg border border-dashed border-slate-700">
-                            <p class="text-slate-400 italic">No arrangements yet.</p>
+                            <p class="text-slate-400 italic">Aucun arrangement pour le moment.</p>
                             @auth
-                                <p class="text-xs mt-2 text-slate-500">Be the first to create one!</p>
+                                @if(auth()->user()->role === 'arranger' || auth()->user()->role === 'admin')
+                                    <p class="text-xs mt-2 text-slate-500">Soyez le premier à en créer un !</p>
+                                @endif
                             @endauth
                         </div>
                     @endif
@@ -187,3 +268,67 @@
     {{-- Delete partition modal --}}
     <x-modal-delete-partition :partition="$partition" />
 </x-layouts.app>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectElement = document.getElementById('arrangement-select');
+        const playButton = document.getElementById('arr-play-btn');
+        const pauseButton = document.getElementById('arr-pause-btn');
+        const downloadLink = document.getElementById('arr-download');
+        const audioPlayer = document.getElementById('partition-player');
+
+        let currentAudioSrc = '';
+        let isPlaying = false;
+        let currentArrangementId = '';
+
+        // Fonction pour mettre à jour l'état du lecteur audio
+        function updatePlayerState() {
+            if (currentAudioSrc && isPlaying) {
+                audioPlayer.src = currentAudioSrc;
+                audioPlayer.play();
+                playButton.classList.add('hidden');
+                pauseButton.classList.remove('hidden');
+            } else {
+                audioPlayer.pause();
+                playButton.classList.remove('hidden');
+                pauseButton.classList.add('hidden');
+            }
+        }
+
+        // Écouteur d'événements pour le changement de sélection d'arrangement
+        selectElement.addEventListener('change', function () {
+            const selectedOption = this.options[this.selectedIndex];
+            const audioSrc = selectedOption.getAttribute('data-audio');
+            const status = selectedOption.getAttribute('data-status');
+
+            currentArrangementId = this.value;
+            currentAudioSrc = audioSrc;
+
+            // Activer ou désactiver le bouton de lecture et le lien de téléchargement
+            if (currentArrangementId && audioSrc) {
+                playButton.disabled = false;
+                downloadLink.classList.remove('hidden');
+                downloadLink.href = audioSrc;
+            } else {
+                playButton.disabled = true;
+                downloadLink.classList.add('hidden');
+            }
+
+            // Mettre à jour l'état du lecteur audio
+            updatePlayerState();
+        });
+
+        // Écouteur d'événements pour le bouton de lecture
+        playButton.addEventListener('click', function () {
+            isPlaying = true;
+            updatePlayerState();
+        });
+
+        // Écouteur d'événements pour le bouton de pause
+        pauseButton.addEventListener('click', function () {
+            isPlaying = false;
+            updatePlayerState();
+        });
+    });
+</script>
+

@@ -46,10 +46,10 @@
 
                     <!-- Scope select: search in title, composer or both -->
                     <label for="scope" class="sr-only">Scope</label>
-                    <select id="scope" name="scope" class="px-2 py-1 border rounded bg-white">
-                        <option value="all" {{ request('scope', 'all') === 'all' ? 'selected' : '' }}>All fields</option>
-                        <option value="title" {{ request('scope') === 'title' ? 'selected' : '' }}>Title</option>
-                        <option value="composer" {{ request('scope') === 'composer' ? 'selected' : '' }}>Composer</option>
+                    <select id="scope" name="scope" class="ml-2 px-2 py-1 border rounded bg-slate-800 text-slate-200 border-slate-600 focus:border-primary focus:ring-primary">
+                        <option value="all" {{ request('scope', 'all') === 'all' ? 'selected' : '' }}>Tout</option>
+                        <option value="title" {{ request('scope') === 'title' ? 'selected' : '' }}>Titre</option>
+                        <option value="composer" {{ request('scope') === 'composer' ? 'selected' : '' }}>Compositeur</option>
                         <option value="genre" {{ request('scope') === 'genre' ? 'selected' : '' }}>Genre</option>
                     </select>
                 </div>
