@@ -1,9 +1,38 @@
-@props(['partition', 'instruments', 'arrangement' => null])
+@props(['partition' => null, 'partitions' => null, 'instruments', 'arrangement' => null])
 
-<form method="POST" action="{{ $arrangement ? route('arrangements.update', $arrangement) : route('partitions.arrangements.store', $partition) }}" class="space-y-4">
+@php
+    // Determine form action depending on whether we are creating for a partition or globally
+    if ($arrangement) {
+        $formAction = route('arrangements.update', $arrangement);
+        $formMethodHidden = method_field('PUT');
+    } else {
+        if (!empty($partition)) {
+            $formAction = route('partitions.arrangements.store', $partition);
+        } else {
+            $formAction = route('arrangements.store');
+        }
+        $formMethodHidden = '';
+    }
+
+    // Cancel URL
+    $cancelUrl = !empty($partition) ? route('partitions.show', $partition) : route('arrangements.index');
+@endphp
+
+<form method="POST" action="{{ $formAction }}" class="space-y-4">
     @csrf
-    @if($arrangement)
-        @method('PUT')
+    {!! $formMethodHidden !!}
+
+    @if(empty($partition) && !empty($partitions))
+        <div>
+            <label class="form-label">Choisir une partition</label>
+            <select name="partition_id" class="form-input" required>
+                <option value="">-- Sélectionner --</option>
+                @foreach($partitions as $p)
+                    <option value="{{ $p->id }}" @selected(old('partition_id') == $p->id)>{{ $p->title }}</option>
+                @endforeach
+            </select>
+            @error('partition_id')<p class="text-red-500 text-sm mt-1">{{ $message }}</p>@enderror
+        </div>
     @endif
 
     <div>
@@ -35,6 +64,6 @@
 
     <div class="flex items-center gap-3">
         <button class="btn btn-primary" type="submit">{{ $arrangement ? 'Mettre à jour' : 'Créer l\'arrangement' }}</button>
-        <a href="{{ route('partitions.show', $partition) }}" class="btn btn-outline">Annuler</a>
+        <a href="{{ $cancelUrl }}" class="btn btn-outline">Annuler</a>
     </div>
 </form>
