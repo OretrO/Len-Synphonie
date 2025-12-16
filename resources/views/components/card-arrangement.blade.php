@@ -38,9 +38,14 @@
         </div>
     @endif
 
-    @if(!empty($arrangement->audio_file_path))
+    @if(!empty($arrangement->audio_file_path) && $arrangement->status === 'completed')
+        @php
+            $pathParts = explode('/', $arrangement->audio_file_path);
+            $filename = end($pathParts);
+            $audioUrl = route('audio.stream', ['arrangementId' => $arrangement->id, 'filename' => $filename]);
+        @endphp
         <div class="mt-3">
-            <audio id="audio-{{ $arrangement->id }}" src="{{ asset($arrangement->audio_file_path) }}"></audio>
+            <audio id="audio-{{ $arrangement->id }}" src="{{ $audioUrl }}"></audio>
         </div>
     @endif
 

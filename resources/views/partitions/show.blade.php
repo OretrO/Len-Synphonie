@@ -118,7 +118,15 @@
                                 <select id="arrangement-select" class="form-input w-full md:w-2/3">
                                     <option value="">-- Choisir un arrangement --</option>
                                     @foreach($partition->arrangements as $arr)
-                                        <option value="{{ $arr->id }}" data-audio="{{ $arr->audio_file_path ? asset($arr->audio_file_path) : '' }}" data-status="{{ $arr->status }}">{{ $arr->name }} @if($arr->status) ({{ $arr->status }}) @endif</option>
+                                        @php
+                                            $arrAudioUrl = '';
+                                            if ($arr->audio_file_path && $arr->status === 'completed') {
+                                                $pathParts = explode('/', $arr->audio_file_path);
+                                                $filename = end($pathParts);
+                                                $arrAudioUrl = route('audio.stream', ['arrangementId' => $arr->id, 'filename' => $filename]);
+                                            }
+                                        @endphp
+                                        <option value="{{ $arr->id }}" data-audio="{{ $arrAudioUrl }}" data-status="{{ $arr->status }}">{{ $arr->name }} @if($arr->status) ({{ $arr->status }}) @endif</option>
                                     @endforeach
                                 </select>
 

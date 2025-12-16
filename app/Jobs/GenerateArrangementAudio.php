@@ -34,6 +34,8 @@ class GenerateArrangementAudio implements ShouldQueue
     public function __construct(public Arrangement $arrangement)
     {
         $this->onQueue('audio');
+        // Load relationships to avoid N+1 queries
+        $this->arrangement->load(['instruments', 'partition']);
     }
 
     /**
@@ -65,7 +67,7 @@ class GenerateArrangementAudio implements ShouldQueue
             }
 
             // Ensure audio storage directory exists
-            Storage::disk('public')->makeDirectory('audio/arrangements', 0755, true);
+            Storage::disk('public')->makeDirectory('arrangements/' . $this->arrangement->id, 0755, true);
 
             // Generate output path
             $outputFilename = "arrangements/{$this->arrangement->id}/" . uniqid() . '.wav';
@@ -75,7 +77,6 @@ class GenerateArrangementAudio implements ShouldQueue
             if (!is_dir($outputDir)) {
                 mkdir($outputDir, 0755, true);
             }
-
 
             $command = $this->buildLenSymphonyCommand($musicXmlPath, $outputPath, $this->arrangement);
 
@@ -134,8 +135,11 @@ class GenerateArrangementAudio implements ShouldQueue
      */
     private function buildLenSymphonyCommand(string $musicXmlPath, string $outputPath, Arrangement $arrangement): array
     {
+        // Detect Java path based on OS
+        $javaPath = $this->getJavaPath();
+        
         $command = [
-            '/usr/lib/jvm/java-25-openjdk/bin/java',
+            $javaPath,
             '-jar',
             base_path('java/lensymphony.jar'),
             '-i',
@@ -146,9 +150,19 @@ class GenerateArrangementAudio implements ShouldQueue
 
         // Add voice mappings: -v 1:SAXOPHONE -v 2:HORN etc.
         // Instruments are passed in order with 1-based indices
+        // Ensure instruments are loaded
+        if (!$this->arrangement->relationLoaded('instruments')) {
+            $this->arrangement->load('instruments');
+        }
+        
         if ($this->arrangement->instruments->count() > 0) {
+            // Sort instruments by track_number from pivot
+            $instruments = $this->arrangement->instruments->sortBy(function($instrument) {
+                return $instrument->pivot->track_number ?? 999;
+            });
+            
             $trackNumber = 1;
-            foreach ($this->arrangement->instruments as $instrument) {
+            foreach ($instruments as $instrument) {
                 // Convert instrument name to uppercase for LenSymphony enum
                 // Expected format: PIANO, VIOLIN, SAXOPHONE, etc.
                 $command[] = '-v';
@@ -194,6 +208,126 @@ class GenerateArrangementAudio implements ShouldQueue
 
             throw $exception;
         }
+    }
+
+    /**
+     * Get Java executable path based on OS.
+     * Supports Java 24+ and automatically detects available versions.
+     * 
+     * @return string
+     */
+    private function getJavaPath(): string
+    {
+        // Check if JAVA_HOME is set
+        $javaHome = env('JAVA_HOME');
+        if ($javaHome) {
+            $separator = DIRECTORY_SEPARATOR;
+            $javaPath = rtrim($javaHome, $separator) . $separator . 'bin' . $separator . 'java';
+            if (PHP_OS_FAMILY === 'Windows') {
+                $javaPath .= '.exe';
+            }
+            if (file_exists($javaPath)) {
+                Log::info('Using Java from JAVA_HOME', ['path' => $javaPath]);
+                return $javaPath;
+            }
+        }
+
+        // Try common Java paths on Windows (supports Java 24, 25, and other versions)
+        if (PHP_OS_FAMILY === 'Windows') {
+            $possiblePaths = [];
+            
+            // Check Program Files (x86) first (where user has Java installed)
+            $x86Base = 'C:\\Program Files (x86)\\Java\\';
+            if (is_dir($x86Base)) {
+                $dirs = scandir($x86Base);
+                foreach ($dirs as $dir) {
+                    if ($dir !== '.' && $dir !== '..' && is_dir($x86Base . $dir)) {
+                        // Check for jdk-* or jre-* directories
+                        if (preg_match('/^(jdk|jre)-/', $dir)) {
+                            $javaPath = $x86Base . $dir . '\\bin\\java.exe';
+                            if (file_exists($javaPath)) {
+                                $possiblePaths[] = $javaPath;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Check Program Files
+            $pfBase = 'C:\\Program Files\\Java\\';
+            if (is_dir($pfBase)) {
+                $dirs = scandir($pfBase);
+                foreach ($dirs as $dir) {
+                    if ($dir !== '.' && $dir !== '..' && is_dir($pfBase . $dir)) {
+                        if (preg_match('/^(jdk|jre)-/', $dir)) {
+                            $javaPath = $pfBase . $dir . '\\bin\\java.exe';
+                            if (file_exists($javaPath)) {
+                                $possiblePaths[] = $javaPath;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            // Also try specific versions (24, 25)
+            $specificPaths = [
+                'C:\\Program Files\\Java\\jdk-25\\bin\\java.exe',
+                'C:\\Program Files\\Java\\jre-25\\bin\\java.exe',
+                'C:\\Program Files (x86)\\Java\\jdk-25\\bin\\java.exe',
+                'C:\\Program Files (x86)\\Java\\jre-25\\bin\\java.exe',
+                'C:\\Program Files\\Java\\jdk-24\\bin\\java.exe',
+                'C:\\Program Files\\Java\\jre-24\\bin\\java.exe',
+                'C:\\Program Files (x86)\\Java\\jdk-24\\bin\\java.exe',
+                'C:\\Program Files (x86)\\Java\\jre-24\\bin\\java.exe',
+            ];
+            
+            $possiblePaths = array_merge($possiblePaths, $specificPaths);
+            
+            // Try to find the highest version (prefer 25, then 24, then others)
+            usort($possiblePaths, function($a, $b) {
+                // Extract version numbers
+                preg_match('/jdk-(\d+)|jre-(\d+)/', $a, $matchA);
+                preg_match('/jdk-(\d+)|jre-(\d+)/', $b, $matchB);
+                $versionA = (int)($matchA[1] ?? $matchA[2] ?? 0);
+                $versionB = (int)($matchB[1] ?? $matchB[2] ?? 0);
+                return $versionB <=> $versionA; // Descending order
+            });
+            
+            foreach ($possiblePaths as $path) {
+                if (file_exists($path)) {
+                    Log::info('Using Java from detected path', ['path' => $path]);
+                    return $path;
+                }
+            }
+        }
+
+        // Try to find java in PATH
+        $javaCommand = PHP_OS_FAMILY === 'Windows' ? 'java.exe' : 'java';
+        $whereCommand = PHP_OS_FAMILY === 'Windows' ? ['where', $javaCommand] : ['which', 'java'];
+        $process = new Process($whereCommand);
+        
+        try {
+            $process->run();
+            if ($process->isSuccessful()) {
+                $output = trim($process->getOutput());
+                // On Windows, 'where' can return multiple paths, take the first one
+                if (PHP_OS_FAMILY === 'Windows') {
+                    $lines = explode("\n", $output);
+                    $output = trim($lines[0] ?? '');
+                }
+                if (!empty($output) && file_exists($output)) {
+                    Log::info('Using Java from PATH', ['path' => $output]);
+                    return $output;
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to find Java in PATH', ['error' => $e->getMessage()]);
+        }
+
+        // Default fallback
+        $defaultPath = PHP_OS_FAMILY === 'Windows' ? 'java.exe' : 'java';
+        Log::warning('Using default Java path (may not work)', ['path' => $defaultPath]);
+        return $defaultPath;
     }
 }
 

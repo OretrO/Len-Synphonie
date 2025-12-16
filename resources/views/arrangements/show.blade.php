@@ -10,23 +10,110 @@
                 <h3 style="margin-bottom: 10px;">🎵 Audio Player</h3>
 
                 @if ($arrangement->status === 'completed' && $arrangement->audio_file_path)
-                    {{-- Extract filename from path (e.g., "arrangements/55/69418277145fa.wav" -> "69418277145fa.wav") --}}
+                    {{-- Extract filename and arrangement ID from path (e.g., "arrangements/55/69418277145fa.wav") --}}
                     @php
                         $pathParts = explode('/', $arrangement->audio_file_path);
-                        $arrangementId = $pathParts[1] ?? $arrangement->id;
+                        // Path format: "arrangements/{id}/filename.wav"
+                        // So $pathParts[0] = "arrangements", $pathParts[1] = "{id}", $pathParts[2] = "filename.wav"
+                        $arrangementId = $arrangement->id; // Use the arrangement ID directly
                         $filename = end($pathParts);
                         $audioUrl = route('audio.stream', ['arrangementId' => $arrangementId, 'filename' => $filename]);
                     @endphp
-                    <audio controls style="width: 100%; margin-bottom: 10px;">
-                        <source src="{{ $audioUrl }}" type="audio/wav">
-                        Your browser does not support the audio element.
-                    </audio>
-                    <p style="color: #22863a; font-size: 14px;">✅ Audio is ready to play</p>
-
-                    {{-- Download button --}}
-                    <a href="{{ route('audio.download', ['arrangementId' => $arrangementId, 'filename' => $filename]) }}" class="btn btn-outline" style="font-size: 13px; padding: 8px 12px; margin-top: 10px;">
-                        ⬇️ Download Audio
-                    </a>
+                    
+                    <div class="audio-player-container" style="background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(20px); border-radius: 12px; padding: 20px; margin-bottom: 15px;">
+                        <audio id="arrangement-audio-{{ $arrangement->id }}" 
+                               controls 
+                               preload="none"
+                               style="width: 100%; margin-bottom: 15px;">
+                            <source src="{{ $audioUrl }}" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>
+                        
+                        {{-- Debug info --}}
+                        <div style="font-size: 11px; color: #666; margin-top: 5px; padding: 8px; background: rgba(0,0,0,0.1); border-radius: 4px;">
+                            <div><strong>Audio URL:</strong> <a href="{{ $audioUrl }}" target="_blank" style="color: #58a6ff;">{{ $audioUrl }}</a></div>
+                            <div><strong>Test:</strong> <a href="{{ $audioUrl }}" target="_blank" style="color: #58a6ff;">Cliquez ici pour tester l'URL</a></div>
+                            <div><strong>File path:</strong> {{ $arrangement->audio_file_path }}</div>
+                            <div><strong>Arrangement ID:</strong> {{ $arrangementId }}</div>
+                            <div><strong>Filename:</strong> {{ $filename }}</div>
+                        </div>
+                        
+                        <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                            <button onclick="playAudio({{ $arrangement->id }})" class="btn btn-primary" style="font-size: 13px; padding: 8px 16px;">
+                                ▶️ Play
+                            </button>
+                            <button onclick="pauseAudio({{ $arrangement->id }})" class="btn btn-outline" style="font-size: 13px; padding: 8px 16px;">
+                                ⏸️ Pause
+                            </button>
+                            <button onclick="restartAudio({{ $arrangement->id }})" class="btn btn-outline" style="font-size: 13px; padding: 8px 16px;">
+                                ⏮️ Restart
+                            </button>
+                            <a href="{{ route('audio.download', ['arrangementId' => $arrangementId, 'filename' => $filename]) }}" class="btn btn-outline" style="font-size: 13px; padding: 8px 16px; text-decoration: none;">
+                                ⬇️ Download WAV
+                            </a>
+                        </div>
+                        
+                        <p style="color: var(--color-success); font-size: 14px; margin-top: 15px; margin-bottom: 0;">
+                            ✅ Audio is ready to play
+                        </p>
+                        
+                        <div id="audio-error-{{ $arrangement->id }}" style="color: var(--color-error); font-size: 12px; margin-top: 10px; display: none;"></div>
+                    </div>
+                    
+                    <script>
+                        function playAudio(arrangementId) {
+                            const audio = document.getElementById('arrangement-audio-' + arrangementId);
+                            const errorDiv = document.getElementById('audio-error-' + arrangementId);
+                            
+                            if (audio) {
+                                audio.play().catch(function(error) {
+                                    console.error('Error playing audio:', error);
+                                    errorDiv.textContent = 'Erreur de lecture: ' + error.message;
+                                    errorDiv.style.display = 'block';
+                                });
+                            }
+                        }
+                        
+                        function pauseAudio(arrangementId) {
+                            const audio = document.getElementById('arrangement-audio-' + arrangementId);
+                            if (audio) {
+                                audio.pause();
+                            }
+                        }
+                        
+                        function restartAudio(arrangementId) {
+                            const audio = document.getElementById('arrangement-audio-' + arrangementId);
+                            if (audio) {
+                                audio.currentTime = 0;
+                                audio.play().catch(function(error) {
+                                    console.error('Error playing audio:', error);
+                                });
+                            }
+                        }
+                        
+                        // Add error handler
+                        document.addEventListener('DOMContentLoaded', function() {
+                            const audio = document.getElementById('arrangement-audio-{{ $arrangement->id }}');
+                            if (audio) {
+                                audio.addEventListener('error', function(e) {
+                                    console.error('Audio error:', e);
+                                    const errorDiv = document.getElementById('audio-error-{{ $arrangement->id }}');
+                                    if (errorDiv) {
+                                        errorDiv.textContent = 'Erreur de chargement audio. Vérifiez la console pour plus de détails.';
+                                        errorDiv.style.display = 'block';
+                                    }
+                                });
+                                
+                                audio.addEventListener('loadedmetadata', function() {
+                                    console.log('Audio metadata loaded successfully');
+                                });
+                                
+                                audio.addEventListener('canplay', function() {
+                                    console.log('Audio can play');
+                                });
+                            }
+                        });
+                    </script>
                 @elseif ($arrangement->status === 'processing')
                     <div style="padding: 15px; background-color: #fff3cd; border-radius: 4px; margin-bottom: 10px;">
                         <p style="margin: 0; color: #856404;">⏳ Audio generation in progress...</p>
