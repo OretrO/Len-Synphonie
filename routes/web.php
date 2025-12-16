@@ -51,6 +51,8 @@ Route::middleware('auth')->group(function () {
 
     // Détails d'une partition (Celle-ci "mange" tout ce qui suit /partitions/...)
     Route::get('/partitions/{partition}', [PartitionController::class, 'show'])->name('partitions.show');
+    // Route pour servir les fichiers (PDF/XML) sans lien symbolique
+    Route::get('/partitions/{partition}/file/{type}', [PartitionController::class, 'downloadFile'])->name('partitions.file');
 
     // Création et stockage d'arrangements liés à une partition (nested)
     Route::get('/partitions/{partition}/arrangements/create', [ArrangementController::class, 'create'])->name('partitions.arrangements.create');

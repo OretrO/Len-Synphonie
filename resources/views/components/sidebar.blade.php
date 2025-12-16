@@ -22,6 +22,12 @@
             </svg>
             <span>Library</span>
         </a>
+        <a href="{{ route('arrangements.index') }}" class="sidebar-link {{ request()->routeIs('arrangements.*') ? 'active' : '' }}">
+            <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+            </svg>
+            <span>Arrangements</span>
+        </a>
 
         @auth
             @if(in_array(auth()->user()->role, ['arranger', 'admin']))
@@ -48,15 +54,6 @@
                 </svg>
                 <span>Profile</span>
             </a>
-
-            @if(in_array(auth()->user()->role, ['arranger', 'admin']))
-                <a href="{{ route('partitions.index') }}" class="sidebar-playlist">
-                    <svg class="sidebar-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                    </svg>
-                    <span>My Scores</span>
-                </a>
-            @endif
         </div>
 
         <div class="sidebar-divider"></div>

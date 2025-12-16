@@ -92,6 +92,10 @@
                             <a href="{{ route('partitions.index') }}" class="spotify-btn spotify-btn-secondary">
                                 View Library
                             </a>
+                            <a>
+                                <a href="{{ route('arrangements.index') }}" class="spotify-btn spotify-btn-secondary">
+                                    Manage <Arrangements></Arrangements>
+                            </a>
                         </div>
                     @endif
                 @endauth
