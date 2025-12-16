@@ -94,4 +94,16 @@ class PartitionController extends Controller
 
         return redirect()->route('partitions.index');
     }
+    public function Search(Request $request)
+    {
+        $query = $request->input('query');
+
+        $partitions = Partition::where('title', 'like', '%' . $query . '%')
+            ->orWhere('composer', 'like', '%' . $query . '%')
+            ->with('user')
+            ->latest()
+            ->paginate(12);
+
+        return view('partitions.index', compact('partitions'));
+    }
 }

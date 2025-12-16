@@ -35,6 +35,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Routes des partitions (accessibles à tous - visitor peut voir la liste)
 Route::get('/partitions', [PartitionController::class, 'index'])->name('partitions.index');
+// Route de recherche publique pour les partitions
+Route::get('/partitions/search', [PartitionController::class, 'Search'])->name('partitions.search');
 
 // Routes nécessitant une authentification (user, arranger, admin)
 Route::middleware('auth')->group(function () {
