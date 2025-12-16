@@ -1,6 +1,6 @@
 @php
     use Illuminate\Support\Facades\Storage;
-    $avatarPath = $user->avatar && $user->avatar !== 'avatars/default.svg' 
+    $avatarPath = $user->avatar && $user->avatar !== 'avatars/default.svg'
         ? (Storage::disk('public')->exists($user->avatar) ? asset('storage/' . $user->avatar) : null)
         : null;
 @endphp
@@ -33,14 +33,16 @@
                 </div>
             </div>
 
-            <div class="mt-6">
-                <h3 class="text-lg font-semibold mb-2">My Scores</h3>
-                <div class="partition-grid">
-                    @foreach($user->partitions()->limit(6)->get() as $partition)
-                        <x-card-partition :partition="$partition" />
-                    @endforeach
+            @if(in_array($user->role, ['arranger', 'admin']))
+                <div class="mt-6">
+                    <h3 class="text-lg font-semibold mb-2">My Scores</h3>
+                    <div class="partition-grid">
+                        @foreach($user->partitions()->limit(6)->get() as $partition)
+                            <x-card-partition :partition="$partition" />
+                        @endforeach
+                    </div>
                 </div>
-            </div>
+            @endif
 
             <div class="mt-6 text-right">
                 <a href="{{ route('profile.edit') }}" class="btn btn-outline">Edit Profile</a>
