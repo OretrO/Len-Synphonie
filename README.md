@@ -1,11 +1,23 @@
 # Tableau des Tâches par Membre
 
-| Sprint | Membre       | Tâches                  | Statut   |
-|--------|--------------|-------------------------|----------|
-| 1      | Regniez Léo  | \#12, \#13, \#14, \#15  | Terminée |
-| 1      | Strobbe Théo | \#9, \#10, \#11         | Terminée |
-| 1      | Bras Tristan | \#8, \#7, \#3           | Terminée |
-| 1      | Plouvain     | \#6, \#5, \#4, \#2, \#1 | Terminée |
+| Sprint | Membre         | Tâches                  | Statut   |
+|--------|----------------|-------------------------|----------|
+| 1      | Regniez Léo    | \#15, \#14, \#13, \#12  | Terminée |
+| 1      | Strobbe Théo   | \#11, \#10, \#9         | Terminée |
+| 1      | Bras Tristan   | \#8, \#7, \#3           | Terminée |
+| 1      | Plouvin Nathan | \#6, \#5, \#4, \#2, \#1 | Terminée |
+| 2      | Regniez Léo    | \#26, \#25, \#24, \#23  | Terminée |
+| 2      | Strobbe Théo   | \#22                    | Terminée |
+| 2      | Bras Tristan   | \#21, \#20, \#19, \#18  | Terminée |
+| 2      | Plouvin Nathan | \#18, \#17, \#16        | Terminée |
+| 3      | Regniez Léo    | \#38, \#37, \#36, \#35  | Terminée |
+| 3      | Strobbe Théo   | \#34, \#33              | Terminée |
+| 3      | Bras Tristan   | \#32, \#31              | Terminée |
+| 3      | Plouvin Nathan | \#30, \#29              | Terminée |
+| 4      | Regniez Léo    | \#46, \#45              | Terminée |
+| 4      | Strobbe Théo   | \47, \#44               | Terminée |
+| 4      | Bras Tristan   | \#48, \#42, \#41        | Terminée |
+| 4      | Plouvin Nathan | \#48, \#40, \#39        | Terminée |
 
 
 ---
