@@ -27,10 +27,7 @@ class PartitionController extends Controller
 
     public function create()
     {
-        // Vérifier que l'utilisateur est arranger ou admin
-        if (!in_array(optional(Auth::user())->role, ['arranger', 'admin'])) {
-            abort(403, 'Accès refusé. Seuls les arrangers et admins peuvent créer des partitions.');
-        }
+        $this->authorize('create', Partition::class);
 
         return view('partitions.create');
     }
@@ -51,8 +48,9 @@ class PartitionController extends Controller
             'composer' => 'nullable|string|max:255',
             'musicxml_file' => 'required|file|mimes:xml,musicxml|max:10240',
             'genre' => 'required|string|max:100',
-            'title' => ['required', 'string', 'max:255'],
-            'composer' => ['nullable', 'string', 'max:255'],
+            'description' => 'nullable|string|max:500',
+            'xml_file' => 'required|file|extensions:xml,musicxml', // Laravel 12 syntaxe simplifiée
+            'pdf_file' => 'required|file|mimes:pdf',
         ]);
 
         // Upload du fichier MusicXML
