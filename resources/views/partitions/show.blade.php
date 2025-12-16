@@ -5,52 +5,43 @@
         @php
             $currentUser = auth()->user();
         @endphp
-        <div class="partition-header mb-6 flex items-start gap-6">
+
+        <div class="partition-header mb-6 flex flex-col md:flex-row items-start justify-between gap-6">
+
             <div class="w-full md:w-3/4">
                 <h1 class="partition-title text-3xl font-bold mb-2">{{ $partition->title }}</h1>
+
                 @if($partition->composer)
                     <p class="text-sm text-slate-400 mb-1"><strong>Composer:</strong> {{ $partition->composer }}</p>
                 @endif
                 <p class="text-sm text-slate-400 mb-1"><strong>Created:</strong> {{ $partition->created_at->format('d/m/Y') }}</p>
+                <p class="text-sm text-slate-400 mb-1"><strong>Genre:</strong> {{ $partition->genre ?? 'Non défini' }}</p>
 
-                <div class="flex items-center gap-3 mt-3">
+                <div class="flex items-center gap-3 mt-4">
                     @php
                         $author = $partition->user ?? null;
-                        $avatarPath = $author && !empty($author->avatar) ? ($author->avatar) : asset('avatars/default.svg');
+                        // Gestion sécurisée de l'avatar
+                        $avatarPath = ($author && !empty($author->avatar))
+                            ? asset('storage/' . $author->avatar)
+                            : asset('avatars/default.svg'); // Assurez-vous d'avoir une image par défaut
                     @endphp
 
-
-
-            @auth
-                @if(auth()->user()->id === $partition->user_id || auth()->user()->role === 'admin')
-                    <div class="partition-actions">
-                        <a href="{{ route('partitions.edit', $partition) }}" class="btn btn-outline">
-                            Modifier
-                        </a>
-                        <form action="{{ route('partitions.destroy', $partition) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette partition ?');">
-                            @csrf
-                            @method('DELETE')
-                            <button type="submit" class="btn btn-danger">Supprimer</button>
-                        </form>
-                    </div>
-                @endif
-            @endauth
-                    <img src="{{ $avatarPath }}" alt="{{ $author->name ?? 'User' }} avatar" class="navbar-avatar" />
+                    <img src="{{ $avatarPath }}" alt="{{ $author->name ?? 'User' }} avatar" class="w-10 h-10 rounded-full object-cover border border-slate-600" />
                     <div>
                         <div class="text-sm font-medium">{{ $author->name ?? 'Unknown' }}</div>
                         <div class="text-xs text-slate-400">@if($author){{ $author->email }}@endif</div>
                     </div>
                 </div>
-
             </div>
 
             <div class="w-full md:w-1/4 flex flex-col items-end gap-3">
                 @auth
-                    @if($currentUser instanceof \App\Models\User && $currentUser->id === ($partition->user_id ?? null) || ($currentUser instanceof \App\Models\User && $currentUser->role === 'admin'))
-                        <div class="partition-actions">
+                    {{-- Boutons Modifier / Supprimer (Visible si Admin ou Propriétaire) --}}
+                    @if($currentUser instanceof \App\Models\User && ($currentUser->id === ($partition->user_id ?? null) || $currentUser->role === 'admin'))
+                        <div class="flex gap-2">
                             <a href="{{ route('partitions.edit', $partition) }}" class="btn btn-outline">Edit</a>
 
-                            <form action="{{ route('partitions.destroy', $partition) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this score?');" style="display:inline">
+                            <form action="{{ route('partitions.destroy', $partition) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this score?');">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-danger">Delete</button>
@@ -58,179 +49,143 @@
                         </div>
                     @endif
 
+                    {{-- Bouton Créer Arrangement (Visible si Arrangeur ou Admin) --}}
                     @if($currentUser instanceof \App\Models\User && in_array($currentUser->role, ['arranger', 'admin']))
-                        @if(
-                            \Illuminate\Support\Facades\Route::has('arrangements.create')
-                        )
+                        @if(\Illuminate\Support\Facades\Route::has('arrangements.create'))
                             <a href="{{ route('arrangements.create', ['partition' => $partition->id]) }}" class="btn btn-primary">Create arrangement</a>
                         @endif
                     @endif
                 @endauth
 
-                <a href="{{ route('partitions.index') }}" class="btn btn-outline">← Back to list</a>
+                <a href="{{ route('partitions.index') }}" class="btn btn-outline text-sm">← Back to list</a>
             </div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div class="lg:col-span-2">
+
+            <div class="lg:col-span-2 space-y-6">
+
                 <div class="card">
-                    <h2 class="card-title">Score details</h2>
+                    <h2 class="card-title text-xl font-bold mb-4">Score details</h2>
 
                     @if($partition->description)
-                        <p class="card-text">{{ $partition->description }}</p>
+                        <div class="prose prose-invert mb-4 text-slate-300">
+                            {{ $partition->description }}
+                        </div>
                     @endif
 
-                    <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                        <div>
-                            <p class="text-sm text-slate-400"><strong>Key / Meter:</strong> {{ $partition->key ?? '—' }}</p>
-                            <p class="text-sm text-slate-400"><strong>Duration:</strong> {{ $partition->duration ?? '—' }}</p>
-                        </div>
+                    <div class="bg-slate-800 rounded-lg p-4 mt-4 border border-slate-700">
+                        <h3 class="text-sm font-semibold mb-3 text-slate-200 uppercase tracking-wider">Files</h3>
+                        <div class="flex flex-wrap gap-3">
 
-                        <div>
-                            <p class="text-sm text-slate-400"><strong>Difficulty:</strong> {{ $partition->difficulty ?? '—' }}</p>
-                            <p class="text-sm text-slate-400"><strong>Tags:</strong>
-                                @if($partition->tags)
-                                    @foreach(explode(',', $partition->tags) as $tag)
-                                        <span class="badge badge-user mr-1">{{ trim($tag) }}</span>
-                                    @endforeach
-                                @else
-                                    —
-                                @endif
-                            </p>
-                        </div>
-                    </div>
-
-                    {{-- Files (PDF / Audio) --}}
-                    <div class="mt-6">
-                        <h3 class="text-lg font-semibold mb-2">Files</h3>
-                        <div class="flex flex-col gap-3">
-                            @if(!empty($partition->sheet_file_path))
-                                <a href="{{ asset($partition->sheet_file_path) }}" target="_blank" class="btn btn-outline">Open sheet (PDF)</a>
+                            {{-- Fichier PDF (Visuel) --}}
+                            @if(!empty($partition->musicpdf_file_path))
+                                <a href="{{ asset('storage/' . $partition->musicpdf_file_path) }}" target="_blank" class="btn btn-primary flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                                    View PDF Sheet
+                                </a>
+                            @else
+                                <span class="text-xs text-slate-500 italic">No PDF available</span>
                             @endif
 
-
-
-
-
-            <p class="partition-meta">
-                <strong>Created by:</strong> {{ $partition->user->name }}
-            </p>
-                            @if(!empty($partition->audio_file_path))
-                                <audio controls src="{{ asset($partition->audio_file_path) }}" class="w-full mt-2">Your browser does not support the audio element.</audio>
+                            {{-- Fichier XML (Source) --}}
+                            @if(!empty($partition->musicxml_file_path))
+                                <a href="{{ asset('storage/' . $partition->musicxml_file_path) }}" download class="btn btn-outline flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    Download MusicXML
+                                </a>
                             @endif
                         </div>
                     </div>
-
-                <p class="partition-meta">
-                    <strong>Genre:</strong> {{ $partition->genre }}
-                </p>
-
-            <p class="partition-meta">
-                <strong>Date:</strong> {{ $partition->created_at->format('d/m/Y') }}
-            </p>
-
-        </div>
                 </div>
-
-                {{-- Arrangements --}}
-                <div class="mt-6 card">
-                    <h3 class="card-title">Arrangements</h3>
+                <div class="card">
+                    <h3 class="card-title text-xl font-bold mb-4">Arrangements</h3>
 
                     @if($partition->arrangements && $partition->arrangements->count())
-                        <div class="arrangements-list mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach($partition->arrangements as $arrangement)
-                                <x-card-arrangement :arrangement="$arrangement" :current-user="$currentUser" />
+                                <div class="bg-slate-800 p-4 rounded border border-slate-700">
+                                    <h4 class="font-bold text-white">{{ $arrangement->name ?? 'Sans titre' }}</h4>
+                                    <p class="text-xs text-slate-400">By {{ $arrangement->user->name ?? 'Unknown' }}</p>
+                                    <div class="mt-2">
+                                        <a href="#" class="text-indigo-400 text-sm hover:underline">View details</a>
+                                    </div>
+                                </div>
                             @endforeach
                         </div>
                     @else
-                        <p class="text-slate-400 mt-3 italic">No arrangements yet.</p>
+                        <div class="text-center py-8 bg-slate-800/50 rounded-lg border border-dashed border-slate-700">
+                            <p class="text-slate-400 italic">No arrangements yet.</p>
+                            @auth
+                                <p class="text-xs mt-2 text-slate-500">Be the first to create one!</p>
+                            @endauth
+                        </div>
                     @endif
                 </div>
-
-                {{-- Comments section --}}
-                <div class="mt-6 card">
-                    <h3 class="card-title">Comments ({{ $partition->comments?->count() ?? 0 }})</h3>
+                <div class="card">
+                    <h3 class="card-title text-xl font-bold mb-4">Comments ({{ $partition->comments?->count() ?? 0 }})</h3>
 
                     @auth
-                        <form action="{{ url('/comments') }}" method="POST" class="mt-4 space-y-3">
+                        <form action="{{ url('/comments') }}" method="POST" class="mb-6">
                             @csrf
                             <input type="hidden" name="partition_id" value="{{ $partition->id }}">
-                            <textarea name="content" rows="3" class="form-input" placeholder="Write a comment..."></textarea>
-                            <div class="flex items-center gap-3">
-                                <button class="btn btn-primary" type="submit">Post comment</button>
-                                <span class="text-sm text-slate-400">Be kind — follow community guidelines.</span>
+                            <textarea name="content" rows="3" class="w-full bg-slate-900 border-slate-700 rounded text-slate-200 focus:border-indigo-500 focus:ring-indigo-500" placeholder="Write a comment..."></textarea>
+                            <div class="flex justify-end mt-2">
+                                <button class="btn btn-primary text-sm" type="submit">Post comment</button>
                             </div>
                         </form>
                     @else
-                        <p class="text-slate-400 mt-3">Please <a href="{{ route('login') }}" class="auth-link">log in</a> to post comments.</p>
+                        <div class="bg-indigo-900/20 text-indigo-200 p-4 rounded-lg mb-4 text-sm text-center">
+                            Please <a href="{{ route('login') }}" class="underline font-bold">log in</a> to post comments.
+                        </div>
                     @endauth
 
-                    <div class="mt-4 space-y-4">
-                        @foreach($partition->comments ?? [] as $comment)
-                            <div class="flex items-start gap-3">
-                                @php
-                                    $cuser = $comment->user ?? null;
-                                    $cavatar = $cuser && !empty($cuser->avatar) ? $cuser->avatar : asset('avatars/default.svg');
-                                @endphp
-                                <img src="{{ $cavatar }}" alt="avatar" class="w-9 h-9 rounded-full object-cover">
-                                <div class="flex-1">
-                                    <div class="flex items-center justify-between">
-                                        <div>
-                                            <div class="text-sm font-medium">{{ $cuser->name ?? 'User' }}</div>
-                                            <div class="text-xs text-slate-400">{{ $comment->created_at->diffForHumans() }}</div>
-                                        </div>
-                                        <div class="text-xs text-slate-400">{{ $comment->appreciations?->count() ?? 0 }} ❤️</div>
+                    <div class="space-y-6">
+                        @forelse($partition->comments ?? [] as $comment)
+                            <div class="flex gap-4">
+                                <div class="flex-shrink-0">
+                                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center text-slate-300 font-bold">
+                                        {{ substr($comment->user->name ?? 'A', 0, 1) }}
                                     </div>
-
-                                    <p class="mt-2 text-slate-200">{{ $comment->content }}</p>
+                                </div>
+                                <div class="flex-grow">
+                                    <div class="flex justify-between items-start">
+                                        <span class="font-bold text-slate-200">{{ $comment->user->name ?? 'User' }}</span>
+                                        <span class="text-xs text-slate-500">{{ $comment->created_at->diffForHumans() }}</span>
+                                    </div>
+                                    <p class="text-slate-400 mt-1 text-sm">{{ $comment->content }}</p>
                                 </div>
                             </div>
-                        @endforeach
+                        @empty
+                            <p class="text-slate-500 text-sm italic">No comments yet.</p>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+            <aside class="space-y-6">
+                <div class="card">
+                    <h4 class="font-bold text-white mb-3 border-b border-slate-700 pb-2">Stats</h4>
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-slate-400 text-sm">Views</span>
+                        <span class="font-mono text-white">{{ $partition->views ?? 0 }}</span>
+                    </div>
+                    <div class="flex justify-between items-center">
+                        <span class="text-slate-400 text-sm">Likes</span>
+                        <span class="font-mono text-white">{{ $partition->appreciations?->count() ?? 0 }}</span>
                     </div>
                 </div>
 
-            </div>
-
-            {{-- Right column: metadata, stats, actions --}}
-            <aside class="space-y-4">
-                <div class="card">
-                    <h4 class="font-semibold mb-3">Instruments used</h4>
-                    @if($partition->instruments && $partition->instruments->count())
+                @if(isset($partition->instruments) && $partition->instruments->count())
+                    <div class="card">
+                        <h4 class="font-bold text-white mb-3 border-b border-slate-700 pb-2">Instruments</h4>
                         <ul class="text-sm text-slate-400 space-y-1">
                             @foreach($partition->instruments as $inst)
-                                <li>{{ $inst->name }} @if($inst->pivot?->role) — <small>{{ $inst->pivot->role }}</small>@endif</li>
+                                <li>{{ $inst->name }}</li>
                             @endforeach
                         </ul>
-                    @else
-                        <p class="text-slate-400 italic">No instruments listed.</p>
-                    @endif
-                </div>
-
-                <div class="card">
-                    <h4 class="font-semibold mb-2">Stats</h4>
-                    <p class="text-sm text-slate-400">Views: {{ $partition->views ?? 0 }}</p>
-                    <p class="text-sm text-slate-400">Likes: {{ $partition->appreciations?->count() ?? 0 }}</p>
-                </div>
-
-                <div class="card">
-                    <h4 class="font-semibold mb-2">Actions</h4>
-                    <div class="flex flex-col gap-2">
-                        @auth
-                            <form action="{{ url('/appreciations') }}" method="POST">
-                                @csrf
-                                <input type="hidden" name="partition_id" value="{{ $partition->id }}">
-                                <button class="btn btn-outline" type="submit">Appreciate (Like)</button>
-                            </form>
-                        @else
-                            <a href="{{ route('login') }}" class="btn btn-outline">Log in to like</a>
-                        @endauth
-
-                        @if(!empty($partition->downloadable_file_path))
-                            <a href="{{ asset($partition->downloadable_file_path) }}" class="btn btn-primary">Download files</a>
-                        @endif
                     </div>
-                </div>
+                @endif
             </aside>
-        </div>
-    </div>
+
+        </div> </div>
 </x-layouts.app>
