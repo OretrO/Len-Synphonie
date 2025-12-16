@@ -1,6 +1,6 @@
 @php
     use Illuminate\Support\Facades\Storage;
-    $avatarPath = $user->avatar && $user->avatar !== 'avatars/default.svg' 
+    $avatarPath = $user->avatar && $user->avatar !== 'avatars/default.svg'
         ? (Storage::disk('public')->exists($user->avatar) ? asset('storage/' . $user->avatar) : null)
         : null;
 @endphp
@@ -16,7 +16,7 @@
         <div class="card">
             <form action="{{ route('profile.update') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
-                @method('PATCH')
+                @method('PUT')
 
                 <div class="flex items-center gap-6">
                     <div class="w-28 h-28 rounded-full overflow-hidden border-2 relative flex items-center justify-center" style="border-color: var(--color-border); background: var(--color-surface);">
@@ -54,7 +54,7 @@
                     let img = document.getElementById('avatarPreviewImg');
                     const svg = document.getElementById('avatarPreviewSvg');
                     const container = input.parentElement;
-                    
+
                     if (!img) {
                         img = document.createElement('img');
                         img.id = 'avatarPreviewImg';
@@ -66,7 +66,7 @@
                         };
                         container.insertBefore(img, svg);
                     }
-                    
+
                     img.src = e.target.result;
                     img.style.display = 'block';
                     if (svg) svg.style.display = 'none';
