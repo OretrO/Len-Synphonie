@@ -89,33 +89,39 @@ class PartitionController extends Controller
      */
     public function update(Request $request, Partition $partition)
     {
-        // Vérifier les permissions : propriétaire ou admin
-        if (optional(Auth::user())->id !== $partition->user_id && optional(Auth::user())->role !== 'admin') {
-            abort(403, 'Vous ne pouvez modifier que vos propres partitions.');
-        }
         $this->authorize('update', $partition);
 
         $validated = $request->validate([
-            'title' => ['required', 'string', 'max:255'],
-            'composer' => ['nullable', 'string', 'max:255'],
-            'title' => 'required|string|max:255',
-            'composer' => 'nullable|string|max:255',
-            'musicxml_file' => 'nullable|file|mimes:xml,musicxml|max:10240',
-            'genre' => 'required|string|max:100',
+            'title' => 'required|string|min:5|max:50',
+            'composer' => 'required|string|min:5|max:50',
+            'genre' => 'required|string|max:20',
+            'description' => 'nullable|string|max:500',
+            'musicxml_file' => 'nullable|file|extensions:xml,musicxml|max:2048',
+            'pdf_file' => 'nullable|file|mimes:pdf|max:5120',
         ]);
 
+        // Update basic fields
         $partition->title = $validated['title'];
         $partition->composer = $validated['composer'];
         $partition->genre = $validated['genre'];
+        $partition->description = $validated['description'] ?? null;
 
-        // Si un nouveau fichier est uploadé
+        // 🔴 CRITICAL: If MusicXML is updated, delete all associated arrangements
         if ($request->hasFile('musicxml_file')) {
-            $path = $request->file('musicxml_file')->store('partitions', 'public');
+            // Delete all arrangements because the XML file has changed
+            $partition->arrangements()->delete();
+
+            $path = $request->file('musicxml_file')->store('partitions/xml', 'public');
             $partition->musicxml_file_path = $path;
         }
 
+        // Update PDF if provided
+        if ($request->hasFile('pdf_file')) {
+            $path = $request->file('pdf_file')->store('partitions/pdf', 'public');
+            $partition->musicpdf_file_path = $path;
+        }
+
         $partition->save();
-        $partition->update($validated);
 
         return redirect()->route('partitions.show', $partition)
             ->with('success', 'Score updated successfully.');
@@ -123,17 +129,24 @@ class PartitionController extends Controller
 
     /**
      * Remove the specified resource from storage.
+     *
+     * A partition can only be deleted if it has no associated arrangements.
      */
     public function destroy(Partition $partition)
     {
-        // Vérifier les permissions : propriétaire ou admin
-        if (optional(Auth::user())->id !== $partition->user_id && optional(Auth::user())->role !== 'admin') {
-            abort(403, 'Vous ne pouvez supprimer que vos propres partitions.');
+        $this->authorize('delete', $partition);
+
+        // 🔴 CRITICAL: Check if partition has arrangements
+        if ($partition->arrangements()->count() > 0) {
+            return back()->withErrors([
+                'delete' => 'Cannot delete a score with existing arrangements. Delete all arrangements first.',
+            ])->with('error', 'Cannot delete a score with existing arrangements.');
         }
 
         $partition->delete();
 
-        return redirect()->route('partitions.index');
+        return redirect()->route('partitions.index')
+            ->with('success', 'Score deleted successfully.');
     }
     public function Search(Request $request)
     {

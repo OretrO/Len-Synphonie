@@ -104,13 +104,7 @@
                     @if($partition->arrangements && $partition->arrangements->count())
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach($partition->arrangements as $arrangement)
-                                <div class="bg-slate-800 p-4 rounded border border-slate-700">
-                                    <h4 class="font-bold text-white">{{ $arrangement->name ?? 'Sans titre' }}</h4>
-                                    <p class="text-xs text-slate-400">By {{ $arrangement->user->name ?? 'Unknown' }}</p>
-                                    <div class="mt-2">
-                                        <a href="#" class="text-indigo-400 text-sm hover:underline">View details</a>
-                                    </div>
-                                </div>
+                                <x-card-arrangement :arrangement="$arrangement" :currentUser="$currentUser" />
                             @endforeach
                         </div>
                     @else
@@ -187,5 +181,9 @@
                 @endif
             </aside>
 
-        </div> </div>
+        </div>
+    </div>
+
+    {{-- Delete partition modal --}}
+    <x-modal-delete-partition :partition="$partition" />
 </x-layouts.app>
