@@ -41,6 +41,7 @@
 
             @guest
                 {{-- Visitor navigation --}}
+                <a href="{{ route('login') }}" class="navbar-link">Login</a>
                 <a href="{{ route('register') }}" class="navbar-link">Register</a>
             @endguest
         </div>

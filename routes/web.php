@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PartitionController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\PartitionController;
 use App\Http\Controllers\ArrangementController;
 
 // Routes publiques
@@ -17,6 +16,24 @@ Route::view('/contact', 'pages.contact')->name('contact');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/register', [RegisterController::class, 'register']);
 
+// Route de connexion temporaire
+Route::get('/login', function () {
+    return redirect()->route('home');
+})->name('login');
+
+// Routes des partitions
+Route::resource('partitions', PartitionController::class)->only(['index', 'show']);
+
+// Routes protégées par authentification
+Route::middleware('auth')->group(function () {
+    Route::resource('partitions', PartitionController::class)->only([
+        'create', 'store', 'edit', 'update', 'destroy',
+    ]);
+
+    Route::resource('arrangements', ArrangementController::class)->only([
+        'index', 'show', 'create', 'store', 'edit', 'update', 'destroy',
+    ]);
+});
 // Routes de reset de mot de passe
 Route::get('/forgot-password', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
 Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');

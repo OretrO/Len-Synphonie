@@ -1,5 +1,4 @@
 <x-layouts.app title="Inscription - LenSymphony">
-    @section('content')
     <div class="page-container">
         <div class="card register-card">
             <h1 class="card-title">Créer un compte</h1>
@@ -140,9 +139,6 @@
 
                 <div class="form-actions">
                     <button type="submit" class="btn btn-primary btn-large">
-                        <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
-                        </svg>
                         Créer mon compte
                     </button>
                 </div>
@@ -151,7 +147,7 @@
             <div class="register-footer">
                 <p class="register-footer-text">
                     Vous avez déjà un compte ?
-                    <a href="#" class="register-footer-link">Se connecter</a>
+                    <a href="{{ route('login') }}" class="register-footer-link">Se connecter</a>
                 </p>
             </div>
         </div>
@@ -159,20 +155,22 @@
 
     <script>
     // Prévisualisation de l'avatar
-    document.getElementById('avatar').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        const preview = document.getElementById('avatarPreview');
+    const avatarInput = document.getElementById('avatar');
+    if (avatarInput) {
+        avatarInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('avatarPreview');
 
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(event) {
-                preview.innerHTML = '<img src="' + event.target.result + '" alt="Avatar preview" class="avatar-preview-img">';
-            };
-            reader.readAsDataURL(file);
-        } else {
-            preview.innerHTML = '<svg class="avatar-placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>';
-        }
-    });
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    preview.innerHTML = '<img src="' + event.target.result + '" alt="Avatar preview" class="avatar-preview-img">';
+                };
+                reader.readAsDataURL(file);
+            } else {
+                preview.innerHTML = '<svg class="avatar-placeholder-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>';
+            }
+        });
+    }
     </script>
-    @endsection
 </x-layouts.app>

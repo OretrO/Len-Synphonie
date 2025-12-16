@@ -79,11 +79,6 @@ class PartitionController extends Controller
 
         $partition->update($validated);
 
-        return redirect()->route('partitions.show', $partition);
-    }
-
-        $partition->save();
-
         return redirect()->route('partitions.show', $partition)
             ->with('success', 'Partition mise à jour avec succès !');
     }
@@ -100,4 +95,3 @@ class PartitionController extends Controller
         return redirect()->route('partitions.index');
     }
 }
-
