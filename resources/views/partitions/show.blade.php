@@ -5,6 +5,7 @@
         <div class="partition-header">
             <h1 class="partition-title">{{ $partition->title }}</h1>
 
+
             @auth
                 @if(auth()->user()->id === $partition->user_id || auth()->user()->role === 'admin')
                     <div class="partition-actions">
@@ -28,13 +29,20 @@
                 </p>
             @endif
 
+
+
             <p class="partition-meta">
                 <strong>Created by:</strong> {{ $partition->user->name }}
             </p>
 
+                <p class="partition-meta">
+                    <strong>Genre:</strong> {{ $partition->genre }}
+                </p>
+
             <p class="partition-meta">
                 <strong>Date:</strong> {{ $partition->created_at->format('d/m/Y') }}
             </p>
+
         </div>
 
         <div class="partition-arrangements">

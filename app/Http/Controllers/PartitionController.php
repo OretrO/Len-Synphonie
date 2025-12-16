@@ -23,7 +23,7 @@ class PartitionController extends Controller
     public function create()
     {
         // Vérifier que l'utilisateur est arranger ou admin
-        if (!in_array(Auth::user()->role, ['arranger', 'admin'])) {
+        if (!in_array(optional(Auth::user())->role, ['arranger', 'admin'])) {
             abort(403, 'Accès refusé. Seuls les arrangers et admins peuvent créer des partitions.');
         }
 
@@ -36,7 +36,7 @@ class PartitionController extends Controller
     public function store(Request $request)
     {
         // Vérifier que l'utilisateur est arranger ou admin
-        if (!in_array(Auth::user()->role, ['arranger', 'admin'])) {
+        if (!in_array(optional(Auth::user())->role, ['arranger', 'admin'])) {
             abort(403, 'Accès refusé.');
         }
 
@@ -44,6 +44,7 @@ class PartitionController extends Controller
             'title' => 'required|string|max:255',
             'composer' => 'nullable|string|max:255',
             'musicxml_file' => 'required|file|mimes:xml,musicxml|max:10240',
+            'genre' => 'required|string|max:100',
         ]);
 
         // Upload du fichier MusicXML
@@ -54,6 +55,7 @@ class PartitionController extends Controller
             'composer' => $validated['composer'],
             'musicxml_file_path' => $path,
             'user_id' => Auth::id(),
+            'genre' => $validated['genre'],
         ]);
 
         return redirect()->route('partitions.show', $partition)
@@ -75,7 +77,7 @@ class PartitionController extends Controller
     public function edit(Partition $partition)
     {
         // Vérifier les permissions : propriétaire ou admin
-        if (Auth::user()->id !== $partition->user_id && Auth::user()->role !== 'admin') {
+        if (optional(Auth::user())->id !== $partition->user_id && optional(Auth::user())->role !== 'admin') {
             abort(403, 'Vous ne pouvez modifier que vos propres partitions.');
         }
 
@@ -88,7 +90,7 @@ class PartitionController extends Controller
     public function update(Request $request, Partition $partition)
     {
         // Vérifier les permissions : propriétaire ou admin
-        if (Auth::user()->id !== $partition->user_id && Auth::user()->role !== 'admin') {
+        if (optional(Auth::user())->id !== $partition->user_id && optional(Auth::user())->role !== 'admin') {
             abort(403, 'Vous ne pouvez modifier que vos propres partitions.');
         }
 
@@ -96,10 +98,12 @@ class PartitionController extends Controller
             'title' => 'required|string|max:255',
             'composer' => 'nullable|string|max:255',
             'musicxml_file' => 'nullable|file|mimes:xml,musicxml|max:10240',
+            'genre' => 'required|string|max:100',
         ]);
 
         $partition->title = $validated['title'];
         $partition->composer = $validated['composer'];
+        $partition->genre = $validated['genre'];
 
         // Si un nouveau fichier est uploadé
         if ($request->hasFile('musicxml_file')) {
@@ -119,7 +123,7 @@ class PartitionController extends Controller
     public function destroy(Partition $partition)
     {
         // Vérifier les permissions : propriétaire ou admin
-        if (Auth::user()->id !== $partition->user_id && Auth::user()->role !== 'admin') {
+        if (optional(Auth::user())->id !== $partition->user_id && optional(Auth::user())->role !== 'admin') {
             abort(403, 'Vous ne pouvez supprimer que vos propres partitions.');
         }
 
@@ -130,15 +134,35 @@ class PartitionController extends Controller
     }
     public function Search(Request $request)
     {
-        $query = $request->input('query');
+        $query = trim((string) $request->input('query'));
+        $composerFilter = trim((string) $request->input('composer'));
+        $scope = $request->input('scope', 'all');
 
-        $partitions = Partition::where('title', 'like', '%' . $query . '%')
-            ->orWhere('composer', 'like', '%' . $query . '%')
-            ->with('user')
-            ->latest()
-            ->paginate(12);
+        $qb = Partition::with('user');
+
+        if ($query !== '') {
+            if ($scope === 'title') {
+                $qb->where('title', 'like', '%' . $query . '%');
+            } elseif ($scope === 'composer') {
+                $qb->where('composer', 'like', '%' . $query . '%');
+            } elseif ($scope === 'genre') {
+                $qb->where('genre', 'like', '%' . $query . '%');
+            } else {
+                $qb->where(function ($q) use ($query) {
+                    $q->where('title', 'like', '%' . $query . '%')
+                      ->orWhere('composer', 'like', '%' . $query . '%')
+                      ->orWhere('genre', 'like', '%' . $query . '%');
+                });
+            }
+        }
+
+        if ($composerFilter !== '') {
+            // filtre dédié sur le champ composer
+            $qb->where('composer', 'like', '%' . $composerFilter . '%');
+        }
+
+        $partitions = $qb->latest()->paginate(12);
 
         return view('partitions.index', compact('partitions'));
     }
 }
-

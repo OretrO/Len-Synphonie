@@ -10,7 +10,7 @@
             </div>
 
             @auth
-                @if(in_array(auth()->user()->role, ['arranger', 'admin']))
+                @if(in_array(optional(auth()->user())->role, ['arranger', 'admin']))
                     <a href="{{ route('partitions.create') }}" class="btn btn-primary">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -21,13 +21,26 @@
             @endauth
         </div>
 
-        <!-- Search bar (placeholder pour le futur) -->
-        <div class="search-wrapper">
-            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <!-- Search bar (functional) -->
+        <form action="{{ route('partitions.search') }}" method="GET" class="search-wrapper" role="search">
+            <label for="query" class="sr-only">Search scores</label>
+            <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
-            <input type="text" class="search-input" placeholder="Search for a score, composer..." disabled>
-        </div>
+
+            <input id="query" name="query" type="text" class="search-input" placeholder="Search for a score, composer..." value="{{ request('query', '') }}">
+
+            <!-- Scope select: search in title, composer or both -->
+            <label for="scope" class="sr-only">Scope</label>
+            <select id="scope" name="scope" class="ml-2 px-2 py-1 border rounded bg-white">
+                <option value="all" {{ request('scope', 'all') === 'all' ? 'selected' : '' }}>Tout</option>
+                <option value="title" {{ request('scope') === 'title' ? 'selected' : '' }}>Titre</option>
+                <option value="composer" {{ request('scope') === 'composer' ? 'selected' : '' }}>Compositeur</option>
+                <option value="genre" {{ request('scope') === 'genre' ? 'selected' : '' }}>Genre</option>
+            </select>
+
+            <button type="submit" class="btn btn-secondary ml-2">Search</button>
+        </form>
 
         @if($partitions->count())
             <div class="partition-grid">
@@ -37,7 +50,7 @@
             </div>
 
             <div class="mt-8 flex justify-center">
-                {{ $partitions->links() }}
+                {{ $partitions->appends(request()->except('page'))->links() }}
             </div>
         @else
             <div class="empty-state">
@@ -47,7 +60,7 @@
                 <h3 class="empty-state-title">No scores available</h3>
                 <p class="empty-state-text">Be the first to create a score!</p>
                 @auth
-                    @if(in_array(auth()->user()->role, ['arranger', 'admin']))
+                    @if(in_array(optional(auth()->user())->role, ['arranger', 'admin']))
                         <a href="{{ route('partitions.create') }}" class="btn btn-primary mt-6">
                             Create my first score
                         </a>
