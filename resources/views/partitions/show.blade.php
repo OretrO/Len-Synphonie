@@ -20,6 +20,7 @@
                     @endphp
 
 
+
             @auth
                 @if(auth()->user()->id === $partition->user_id || auth()->user()->role === 'admin')
                     <div class="partition-actions">
@@ -109,6 +110,8 @@
 
 
 
+
+
             <p class="partition-meta">
                 <strong>Created by:</strong> {{ $partition->user->name }}
             </p>
@@ -117,6 +120,10 @@
                             @endif
                         </div>
                     </div>
+
+                <p class="partition-meta">
+                    <strong>Genre:</strong> {{ $partition->genre }}
+                </p>
 
                 <p class="partition-meta">
                     <strong>Genre:</strong> {{ $partition->genre }}
