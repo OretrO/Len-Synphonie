@@ -22,6 +22,7 @@ class Arrangement extends Model
         'instruments_config',
         'audio_file_path',
         'status',
+        'audio_generation_error',
     ];
 
     /**

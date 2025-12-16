@@ -118,7 +118,15 @@
                                 <select id="arrangement-select" class="form-input w-full md:w-2/3">
                                     <option value="">-- Choisir un arrangement --</option>
                                     @foreach($partition->arrangements as $arr)
-                                        <option value="{{ $arr->id }}" data-audio="{{ $arr->audio_file_path ? asset($arr->audio_file_path) : '' }}" data-status="{{ $arr->status }}">{{ $arr->name }} @if($arr->status) ({{ $arr->status }}) @endif</option>
+                                        @php
+                                            $arrAudioUrl = '';
+                                            if ($arr->audio_file_path && $arr->status === 'completed') {
+                                                $pathParts = explode('/', $arr->audio_file_path);
+                                                $filename = end($pathParts);
+                                                $arrAudioUrl = route('audio.stream', ['arrangementId' => $arr->id, 'filename' => $filename]);
+                                            }
+                                        @endphp
+                                        <option value="{{ $arr->id }}" data-audio="{{ $arrAudioUrl }}" data-status="{{ $arr->status }}">{{ $arr->name }} @if($arr->status) ({{ $arr->status }}) @endif</option>
                                     @endforeach
                                 </select>
 
@@ -149,23 +157,6 @@
                                     {{ $arrangement->status }}
                                 </span>
                                             @endif
-                                        </div>
-
-                                        <div class="text-xs text-slate-400 mt-2 flex flex-col gap-1">
-                                            <span>Arrangeur : {{ $arrangement->creator->name ?? 'Inconnu' }}</span>
-                                            <span>Date : {{ $arrangement->created_at->format('d/m/Y') }}</span>
-                                            {{-- Si la méthode likesCount existe --}}
-                                            @if(method_exists($arrangement, 'likesCount'))
-                                                <span>Popularité : {{ $arrangement->likesCount() }} likes</span>
-                                            @endif
-                                        </div>
-                                    </div>
-
-                                    {{-- Actions (Boutons) --}}
-                                    <div class="mt-4 flex items-center gap-2 pt-3 border-t border-slate-700">
-
-                                        {{-- Bouton VOIR --}}
-                                        <a href="{{ route('arrangements.show', $arrangement) }}" class="btn btn-outline btn-small text-xs px-3 py-1">
                                             Voir
                                         </a>
 

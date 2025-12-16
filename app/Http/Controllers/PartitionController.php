@@ -193,9 +193,11 @@ class PartitionController extends Controller
     /**
      * Download the associated file (PDF or XML).
      */
-    public function downloadFile(Partition $partition, string $type)
+    public function downloadFile(Request $request, Partition $partition)
     {
         $this->authorize('view', $partition);
+
+        $type = $request->query('type');
 
         if ($type === 'pdf') {
             $path = $partition->musicpdf_file_path;

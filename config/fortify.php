@@ -154,7 +154,6 @@ return [
         //      'confirmPassword' => true,
         //      'window' => 0,
         //]),
-        'home' => "/"
     ],
 
 ];
