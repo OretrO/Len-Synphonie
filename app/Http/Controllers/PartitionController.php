@@ -37,35 +37,37 @@ class PartitionController extends Controller
      */
     public function store(Request $request)
     {
-        // Vérifier que l'utilisateur est arranger ou admin
-        if (!in_array(optional(Auth::user())->role, ['arranger', 'admin'])) {
-            abort(403, 'Accès refusé.');
-        }
         $this->authorize('create', Partition::class);
 
+        // 1. Validation
         $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'composer' => 'nullable|string|max:255',
-            'musicxml_file' => 'required|file|mimes:xml,musicxml|max:10240',
-            'genre' => 'required|string|max:100',
+            'title' => 'required|string|min:5|max:50',
+            'composer' => 'required|string|min:5|max:50',
+            'genre' => 'required|string|max:20',
             'description' => 'nullable|string|max:500',
-            'xml_file' => 'required|file|extensions:xml,musicxml', // Laravel 12 syntaxe simplifiée
-            'pdf_file' => 'required|file|mimes:pdf',
+            'xml_file' => 'required|file|extensions:xml,musicxml|max:2048',
+            'pdf_file' => 'required|file|mimes:pdf|max:5120',
         ]);
 
-        // Upload du fichier MusicXML
-        $path = $request->file('musicxml_file')->store('partitions', 'public');
+        // 2. Upload des fichiers
+        // On stocke les fichiers dans le disque 'public' pour qu'ils soient accessibles
+        $xmlPath = $request->file('xml_file')->store('partitions/xml', 'public');
+        $pdfPath = $request->file('pdf_file')->store('partitions/pdf', 'public');
 
+        // 3. Création en base de données
+        // On doit mapper les chemins de fichiers vers les noms de colonnes de la migration
         $partition = Partition::create([
             'title' => $validated['title'],
             'composer' => $validated['composer'],
-            'musicxml_file_path' => $path,
             'genre' => $validated['genre'],
-            ...$validated,
+            'description' => $validated['description'],
+            'musicxml_file_path' => $xmlPath,
+            'musicpdf_file_path' => $pdfPath,
             'user_id' => $request->user()->id,
         ]);
 
-        return redirect()->route('partitions.show', $partition);
+        return redirect()->route('partitions.show', $partition)
+            ->with('success', 'Partition créée avec succès !');
     }
 
     /**
