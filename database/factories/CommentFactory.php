@@ -27,9 +27,8 @@ class CommentFactory extends Factory
     public function definition(): array
     {
         return [
-            'arrangement_id' => Arrangement::factory(),
-            'user_id' => User::factory(),
             'content' => fake()->paragraph(),
+            // arrangement_id and user_id will be set in the seeder
         ];
     }
 

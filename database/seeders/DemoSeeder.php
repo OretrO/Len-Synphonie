@@ -8,7 +8,6 @@ use App\Models\Comment;
 use App\Models\Instrument;
 use App\Models\Partition;
 use App\Models\User;
-use App\Models\UserArrangement;
 use Illuminate\Database\Seeder;
 
 /**
@@ -105,12 +104,14 @@ class DemoSeeder extends Seeder
         // Arrangement 1 : Clair de Lune au piano (complété)
         $arrangement1 = Arrangement::factory()->completed()->create([
             'partition_id' => $partition1->id,
+            'creator_id' => $arranger1->id,
             'name' => 'Version Piano Solo',
         ]);
         $arrangement1->instruments()->attach($piano->id, ['track_number' => 1]);
 
         // Arrangement 2 : Clair de Lune version orchestrale (complété)
         $arrangement2 = Arrangement::factory()->completed()->create([
+            'creator_id' => $arranger2->id,
             'partition_id' => $partition1->id,
             'name' => 'Version Orchestrale',
         ]);
@@ -123,6 +124,7 @@ class DemoSeeder extends Seeder
         // Arrangement 3 : Für Elise (en cours de traitement)
         $arrangement3 = Arrangement::factory()->processing()->create([
             'partition_id' => $partition2->id,
+            'creator_id' => $arranger1->id,
             'name' => 'Version Moderne',
         ]);
         $arrangement3->instruments()->attach([
@@ -132,6 +134,7 @@ class DemoSeeder extends Seeder
 
         // Arrangement 4 : Canon (en attente)
         $arrangement4 = Arrangement::factory()->pending()->create([
+            'creator_id' => $admin->id,
             'partition_id' => $partition3->id,
             'name' => 'Version Quatuor',
         ]);
@@ -142,44 +145,32 @@ class DemoSeeder extends Seeder
 
         $this->command->info('✓ 4 arrangements créés');
 
-        // 5. Créer des associations user-arrangement
-        $ua1 = UserArrangement::create([
+        // 5. Créer des appréciations (likes/dislikes)
+        Appreciation::create([
             'user_id' => $user1->id,
             'arrangement_id' => $arrangement1->id,
-        ]);
-        Appreciation::create([
-            'user_arrangement_id' => $ua1->id,
             'is_like' => true,
         ]);
 
-        $ua2 = UserArrangement::create([
+        Appreciation::create([
             'user_id' => $user2->id,
             'arrangement_id' => $arrangement1->id,
-        ]);
-        Appreciation::create([
-            'user_arrangement_id' => $ua2->id,
             'is_like' => true,
         ]);
 
-        $ua3 = UserArrangement::create([
+        Appreciation::create([
             'user_id' => $user1->id,
             'arrangement_id' => $arrangement2->id,
-        ]);
-        Appreciation::create([
-            'user_arrangement_id' => $ua3->id,
             'is_like' => true,
         ]);
 
-        $ua4 = UserArrangement::create([
+        Appreciation::create([
             'user_id' => $admin->id,
             'arrangement_id' => $arrangement2->id,
-        ]);
-        Appreciation::create([
-            'user_arrangement_id' => $ua4->id,
             'is_like' => false,
         ]);
 
-        $this->command->info('✓ Associations et appréciations créées');
+        $this->command->info('✓ Appréciations créées');
 
         // 6. Créer des commentaires significatifs
         Comment::create([

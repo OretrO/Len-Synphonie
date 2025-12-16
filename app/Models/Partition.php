@@ -4,8 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Partition extends Model
 {
@@ -14,19 +12,20 @@ class Partition extends Model
     /**
      * The attributes that are mass assignable.
      *
-     * @var list<string>
+     * @var array<int, string>
      */
     protected $fillable = [
         'title',
         'composer',
         'musicxml_file_path',
+        'musicpdf_file_path',
         'user_id',
     ];
 
     /**
-     * Get the user that created the partition.
+     * Get the user who created the partition.
      */
-    public function user(): BelongsTo
+    public function user()
     {
         return $this->belongsTo(User::class);
     }
@@ -34,7 +33,7 @@ class Partition extends Model
     /**
      * Get the arrangements for the partition.
      */
-    public function arrangements(): HasMany
+    public function arrangements()
     {
         return $this->hasMany(Arrangement::class);
     }

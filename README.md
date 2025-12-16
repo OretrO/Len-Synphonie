@@ -41,6 +41,7 @@ Le projet LenSymphony-Web est un projet SAE S3.A.01 nécessitant une stack techn
 | title | String | Titre de la partition | Required, Max: 255 |
 | composer | String | Compositeur | Nullable, Max: 255 |
 | musicxml_file_path | String | Chemin du fichier MusicXML | Required |
+| musicpdf_file_path | String | Chemin du fichier PDF | Nullable |
 | user_id | Integer | Créateur de la partition | FK → User.id |
 | created_at | Timestamp | Date d'import | Auto |
 | updated_at | Timestamp | Date de modification | Auto |
@@ -50,7 +51,7 @@ Le projet LenSymphony-Web est un projet SAE S3.A.01 nécessitant une stack techn
 |----------|------|-------------|-------------|
 | id | Integer | Identifiant unique | PK, Auto-increment |
 | partition_id | Integer | Partition associée | FK → Partition.id |
-| user_id | Integer | Créateur de l'arrangement | FK → User.id |
+| creator_id | Integer | Créateur de l'arrangement | FK → User.id |
 | name | String | Nom de l'arrangement | Required, Max: 255 |
 | instruments_config | JSON | Configuration des instruments | Required |
 | audio_file_path | String | Chemin du fichier audio généré | Nullable |
@@ -68,15 +69,38 @@ Le projet LenSymphony-Web est un projet SAE S3.A.01 nécessitant une stack techn
 | created_at | Timestamp | Date de création | Auto |
 | updated_at | Timestamp | Date de modification | Auto |
 
-### Like (Appréciation)
+### Appreciation (Classe associative User-Arrangement)
 | Attribut | Type | Description | Contraintes |
 |----------|------|-------------|-------------|
 | id | Integer | Identifiant unique | PK, Auto-increment |
-| arrangement_id | Integer | Arrangement apprécié | FK → Arrangement.id |
 | user_id | Integer | Utilisateur | FK → User.id |
+| arrangement_id | Integer | Arrangement apprécié | FK → Arrangement.id |
 | is_like | Boolean | Like (true) ou Dislike (false) | Required |
 | created_at | Timestamp | Date de création | Auto |
 | updated_at | Timestamp | Date de modification | Auto |
+
+**Note :** Contrainte unique sur (user_id, arrangement_id) - un utilisateur ne peut apprécier qu'une seule fois le même arrangement.
+
+### Instrument
+| Attribut | Type | Description | Contraintes |
+|----------|------|-------------|-------------|
+| id | Integer | Identifiant unique | PK, Auto-increment |
+| name | String | Nom de l'instrument | Required, Max: 255 |
+| category | String | Catégorie (cordes, vents, etc.) | Nullable, Max: 255 |
+| soundfont_file_path | String | Chemin du fichier soundfont | Required |
+| created_at | Timestamp | Date de création | Auto |
+| updated_at | Timestamp | Date de modification | Auto |
+
+### ArrangementInstrument (Classe associative Arrangement-Instrument)
+| Attribut | Type | Description | Contraintes |
+|----------|------|-------------|-------------|
+| arrangement_id | Integer | Arrangement | PK, FK → Arrangement.id |
+| instrument_id | Integer | Instrument | PK, FK → Instrument.id |
+| track_number | Integer | Numéro de piste | Required |
+| created_at | Timestamp | Date de création | Auto |
+| updated_at | Timestamp | Date de modification | Auto |
+
+**Note :** Clé primaire composite sur (arrangement_id, instrument_id).
 
 ---
 
@@ -98,6 +122,7 @@ class User {
 class Partition {
   - title: String
   - composer: String
+  - musicpdf_file_path: String
   - musicxml_file_path: String
   - created_at: Timestamp
   - updated_at: Timestamp
@@ -169,6 +194,7 @@ entity "partitions" as partitions {
   --
   title: VARCHAR(255)
   composer: VARCHAR(255) NULL
+  musicpdf_file_path: VARCHAR(255) NULL
   musicxml_file_path: VARCHAR(255)
   <i>user_id</i>: INTEGER
   created_at: TIMESTAMP
@@ -179,6 +205,7 @@ entity "arrangements" as arrangements {
   <b>id</b>: INTEGER
   --
   <i>partition_id</i>: INTEGER
+  <i>creator_id</i>: INTEGER
   name: VARCHAR(255)
   instruments_config: JSON
   audio_file_path: VARCHAR(255) NULL
@@ -198,11 +225,13 @@ entity "instruments" as instruments {
 }
 
 entity "arrangement_instruments" as arrangement_instruments {
-  <b>id</b>: INTEGER
+  <b>arrangement_id, instrument_id</b>: PK
   --
   <i>arrangement_id</i>: INTEGER
   <i>instrument_id</i>: INTEGER
   track_number: INTEGER
+  created_at: TIMESTAMP
+  updated_at: TIMESTAMP
 }
 
 entity "comments" as comments {
@@ -215,34 +244,64 @@ entity "comments" as comments {
   updated_at: TIMESTAMP
 }
 
-entity "user_arrangements" as user_arrangements {
+entity "appreciations" as appreciations {
   <b>id</b>: INTEGER
   --
   <i>user_id</i>: INTEGER
   <i>arrangement_id</i>: INTEGER
-  created_at: TIMESTAMP
-}
-
-entity "appreciations" as appreciations {
-  <b>id</b>: INTEGER
-  --
-  <i>user_arrangement_id</i>: INTEGER
   is_like: BOOLEAN
   created_at: TIMESTAMP
+  updated_at: TIMESTAMP
+  UNIQUE(user_id, arrangement_id)
 }
 
+' Relations directes (traits pleins)
 users ||--o{ partitions : "user_id"
+users ||--o{ arrangements : "creator_id"
 users ||--o{ comments : "user_id"
-
-users ||..o{ user_arrangements : "user_id"
-arrangements ||..o{ user_arrangements : "arrangement_id"
-
-user_arrangements ||..o{ appreciations : "user_arrangement_id"
-
 partitions ||--o{ arrangements : "partition_id"
-
-arrangements ||--o{ arrangement_instruments : "arrangement_id"
 arrangements ||--o{ comments : "arrangement_id"
 
-instruments ||--o{ arrangement_instruments : "instrument_id"
+' Relations via classes associatives (traits pointillés)
+users ||..o{ appreciations : "user_id"
+arrangements ||..o{ appreciations : "arrangement_id"
+
+arrangements ||..o{ arrangement_instruments : "arrangement_id"
+instruments ||..o{ arrangement_instruments : "instrument_id"
 ```
+
+### Structure détaillée des tables
+
+#### **users** (table principale)
+- Contient les informations des utilisateurs
+- Champs : id, name, email, password, role, timestamps
+
+#### **partitions** (table principale)
+- Stocke les partitions musicales originales
+- Clé étrangère : user_id → users(id)
+
+#### **arrangements** (table principale)
+- Représente les arrangements créés à partir des partitions
+- Clé étrangère : partition_id → partitions(id)
+- Clé étrangère : creator_id → users(id) [relation directe créateur]
+
+#### **instruments** (table principale)
+- Catalogue des instruments disponibles
+
+#### **comments** (table principale)
+- Commentaires sur les arrangements
+- Clé étrangère : user_id → users(id)
+- Clé étrangère : arrangement_id → arrangements(id)
+
+#### **arrangement_instruments** (table associative)
+- Lie les arrangements aux instruments utilisés
+- Clé primaire composite : (arrangement_id, instrument_id)
+- Attribut additionnel : track_number
+
+#### **appreciations** (table associative - classe association)
+- Lie les utilisateurs aux arrangements qu'ils apprécient
+- Clé étrangère : user_id → users(id)
+- Clé étrangère : arrangement_id → arrangements(id)
+- Attribut additionnel : is_like (true = like, false = dislike)
+- Contrainte unique sur (user_id, arrangement_id)
+
