@@ -1,10 +1,10 @@
 
 <x-layouts.app>
-    <x-slot:title>Vérifiez votre email</x-slot:title>
+    <x-slot:title>Verify your email</x-slot:title>
 
     <div class="page-container">
         <div class="card register-card">
-            <h1 class="card-title">Vérifiez votre adresse email</h1>
+            <h1 class="card-title">Verify your email address</h1>
 
             @if (session('status') == 'verification-link-sent')
                 <div class="alert alert-success">
@@ -12,8 +12,8 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div>
-                        <strong>Email envoyé !</strong>
-                        <p>Un nouveau lien de vérification a été envoyé à votre adresse email.</p>
+                        <strong>Email sent!</strong>
+                        <p>A new verification link has been sent to your email address.</p>
                     </div>
                 </div>
             @endif
@@ -24,11 +24,11 @@
                 </svg>
 
                 <p class="card-text">
-                    Merci de vous être inscrit ! Avant de commencer, pourriez-vous vérifier votre adresse email en cliquant sur le lien que nous venons de vous envoyer ?
+                    Thanks for signing up! Before getting started, could you verify your email address by clicking the link we just sent you?
                 </p>
 
                 <p class="card-text card-text-muted">
-                    Si vous n'avez pas reçu l'email, nous serons ravis de vous en envoyer un autre.
+                    If you didn't receive the email, we can send you another one.
                 </p>
             </div>
 
@@ -39,7 +39,7 @@
                         <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                         </svg>
-                        Renvoyer l'email de vérification
+                        Resend verification email
                     </button>
                 </div>
             </form>
@@ -48,7 +48,7 @@
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="register-footer-link" style="background: none; border: none; cursor: pointer;">
-                        Se déconnecter
+                        Log out
                     </button>
                 </form>
             </div>

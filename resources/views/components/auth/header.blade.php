@@ -12,10 +12,10 @@
             <!-- Navigation -->
             <nav class="hidden md:flex items-center gap-6">
                 <a href="{{ route('home') }}" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                    Accueil
+                    Home
                 </a>
                 <a href="{{ route('about') }}" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                    À propos
+                    About
                 </a>
                 <a href="{{ route('contact') }}" class="text-sm text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
                     Contact
@@ -26,10 +26,10 @@
             @guest
                 <div class="flex items-center gap-3">
                     <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-                        Connexion
+                        Login
                     </a>
                     <a href="{{ route('register') }}" class="text-sm px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                        Inscription
+                        Sign Up
                     </a>
                 </div>
             @endguest
@@ -42,7 +42,7 @@
                     <form method="POST" action="{{ route('logout') }}" class="inline">
                         @csrf
                         <button type="submit" class="text-sm text-gray-600 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 transition-colors">
-                            Déconnexion
+                            Logout
                         </button>
                     </form>
                 </div>
