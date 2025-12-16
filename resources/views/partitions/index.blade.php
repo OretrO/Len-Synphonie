@@ -38,8 +38,6 @@
                 <option value="composer" {{ request('scope') === 'composer' ? 'selected' : '' }}>Compositeur</option>
                 <option value="genre" {{ request('scope') === 'genre' ? 'selected' : '' }}>Genre</option>
             </select>
-
-            <button type="submit" class="btn btn-secondary ml-2">Search</button>
         </form>
 
         @if($partitions->count())

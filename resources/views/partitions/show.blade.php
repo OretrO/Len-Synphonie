@@ -106,9 +106,13 @@
                             @foreach($partition->arrangements as $arrangement)
                                 <div class="bg-slate-800 p-4 rounded border border-slate-700">
                                     <h4 class="font-bold text-white">{{ $arrangement->name ?? 'Sans titre' }}</h4>
-                                    <p class="text-xs text-slate-400">By {{ $arrangement->user->name ?? 'Unknown' }}</p>
-                                    <div class="mt-2">
-                                        <a href="#" class="text-indigo-400 text-sm hover:underline">View details</a>
+                                    <div class="text-xs text-slate-400 mt-1 flex flex-col gap-1">
+                                        <span>Arrangeur: {{ $arrangement->creator->name ?? 'Unknown' }}</span>
+                                        <span>Date: {{ $arrangement->created_at->format('d/m/Y') }}</span>
+                                        <span>Popularité: {{ $arrangement->likesCount() }} likes</span>
+                                    </div>
+                                    <div class="mt-3">
+                                        <a href="{{ route('arrangements.show', $arrangement) }}" class="text-indigo-400 text-sm hover:underline">View details</a>
                                     </div>
                                 </div>
                             @endforeach
