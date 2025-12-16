@@ -51,6 +51,8 @@ Route::middleware('auth')->group(function () {
 
     // Détails d'une partition (Celle-ci "mange" tout ce qui suit /partitions/...)
     Route::get('/partitions/{partition}', [PartitionController::class, 'show'])->name('partitions.show');
+    // Route pour servir les fichiers (PDF/XML) sans lien symbolique
+    Route::get('/partitions/{partition}/file/{type}', [PartitionController::class, 'downloadFile'])->name('partitions.file');
 
     // Modification et Suppression
     Route::get('/partitions/{partition}/edit', [PartitionController::class, 'edit'])->name('partitions.edit');

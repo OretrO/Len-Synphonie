@@ -80,7 +80,7 @@
 
                             {{-- Fichier PDF (Visuel) --}}
                             @if(!empty($partition->musicpdf_file_path))
-                                <a href="{{ asset('storage/' . $partition->musicpdf_file_path) }}" target="_blank" class="btn btn-primary flex items-center gap-2">
+                                <a href="{{ route('partitions.file', ['partition' => $partition, 'type' => 'pdf']) }}" target="_blank" class="btn btn-primary flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                                     View PDF Sheet
                                 </a>
@@ -90,7 +90,7 @@
 
                             {{-- Fichier XML (Source) --}}
                             @if(!empty($partition->musicxml_file_path))
-                                <a href="{{ asset('storage/' . $partition->musicxml_file_path) }}" download class="btn btn-outline flex items-center gap-2">
+                                <a href="{{ route('partitions.file', ['partition' => $partition, 'type' => 'xml']) }}" download class="btn btn-outline flex items-center gap-2">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
                                     Download MusicXML
                                 </a>
@@ -104,50 +104,15 @@
                     @if($partition->arrangements && $partition->arrangements->count())
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach($partition->arrangements as $arrangement)
-                                <div class="bg-slate-800 p-4 rounded border border-slate-700 flex flex-col justify-between h-full">
-
-                                    {{-- Informations de l'arrangement --}}
-                                    <div>
-                                        <div class="flex justify-between items-start">
-                                            <h4 class="font-bold text-white">{{ $arrangement->name ?? 'Sans titre' }}</h4>
-                                            <span class="text-xs px-2 py-0.5 rounded bg-slate-700 text-slate-300">
-                                {{ $arrangement->status ?? 'draft' }}
-                            </span>
-                                        </div>
-                                        <p class="text-xs text-slate-400 mt-1">By {{ $arrangement->user->name ?? 'Unknown' }}</p>
-                                        <p class="text-xs text-slate-500">{{ $arrangement->created_at->diffForHumans() }}</p>
+                                <div class="bg-slate-800 p-4 rounded border border-slate-700">
+                                    <h4 class="font-bold text-white">{{ $arrangement->name ?? 'Sans titre' }}</h4>
+                                    <div class="text-xs text-slate-400 mt-1 flex flex-col gap-1">
+                                        <span>Arrangeur: {{ $arrangement->creator->name ?? 'Unknown' }}</span>
+                                        <span>Date: {{ $arrangement->created_at->format('d/m/Y') }}</span>
+                                        <span>Popularité: {{ $arrangement->likesCount() }} likes</span>
                                     </div>
-
-                                    {{-- Actions (Boutons) --}}
-                                    <div class="mt-4 flex items-center gap-2 pt-3 border-t border-slate-700">
-
-                                        {{-- Bouton VOIR --}}
-                                        <a href="{{ route('arrangements.show', $arrangement) }}" class="btn btn-outline btn-small text-xs px-3 py-1">
-                                            Voir
-                                        </a>
-
-                                        {{-- Bouton MODIFIER (Si autorisé) --}}
-                                        @can('update', $arrangement)
-                                            <a href="{{ route('arrangements.edit', $arrangement) }}" class="btn btn-outline btn-small text-xs px-3 py-1">
-                                                Éditer
-                                            </a>
-                                        @endcan
-
-                                        {{-- Bouton SUPPRIMER (Si autorisé) --}}
-                                        @can('delete', $arrangement)
-                                            <form action="{{ route('arrangements.destroy', $arrangement) }}"
-                                                  method="POST"
-                                                  class="ml-auto"
-                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet arrangement ? Cette action est irréversible.');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-red-500 hover:text-red-400 transition" title="Supprimer">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        @endcan
+                                    <div class="mt-3">
+                                        <a href="{{ route('arrangements.show', $arrangement) }}" class="text-indigo-400 text-sm hover:underline">View details</a>
                                     </div>
                                 </div>
                             @endforeach
@@ -156,9 +121,7 @@
                         <div class="text-center py-8 bg-slate-800/50 rounded-lg border border-dashed border-slate-700">
                             <p class="text-slate-400 italic">No arrangements yet.</p>
                             @auth
-                                @if(in_array(auth()->user()->role, ['arranger', 'admin']))
-                                    <p class="text-xs mt-2 text-slate-500">Be the first to create one!</p>
-                                @endif
+                                <p class="text-xs mt-2 text-slate-500">Be the first to create one!</p>
                             @endauth
                         </div>
                     @endif
