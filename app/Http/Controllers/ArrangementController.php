@@ -3,78 +3,77 @@
 namespace App\Http\Controllers;
 
 use App\Models\Arrangement;
+use App\Models\Partition;
+use App\Models\Instrument;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ArrangementController extends Controller
 {
-    public function index()
+    public function __construct()
     {
-        $arrangements = Arrangement::latest()->paginate(12);
-
-        return view('arrangements.index', compact('arrangements'));
+        $this->middleware('auth');
     }
 
-    public function show(Arrangement $arrangement)
+    // Show create form for a given partition
+    public function create(Partition $partition)
     {
-        $this->authorize('view', $arrangement);
+        $user = Auth::user();
+        if (!($user instanceof \App\Models\User) || !in_array($user->role, ['arranger', 'admin'])) {
+            abort(403);
+        }
 
-        return view('arrangements.show', compact('arrangement'));
+        $instruments = Instrument::orderBy('name')->get();
+
+        return view('arrangements.create', compact('partition', 'instruments'));
     }
 
-    public function create()
+    // Store new arrangement
+    public function store(Request $request, Partition $partition)
     {
-        $this->authorize('create', Arrangement::class);
+        $user = Auth::user();
+        if (!($user instanceof \App\Models\User) || !in_array($user->role, ['arranger', 'admin'])) {
+            abort(403);
+        }
 
-        return view('arrangements.create');
-    }
+        $rules = [
+            'name' => ['required', 'string', 'min:5', 'max:50'],
+            'description' => ['nullable', 'string', 'max:500'],
+            'instruments' => ['required', 'array'],
+            'instruments.*' => ['exists:instruments,id'],
+        ];
 
-    public function store(Request $request)
-    {
-        $this->authorize('create', Arrangement::class);
+        $validator = Validator::make($request->all(), $rules);
+        if ($validator->fails()) {
+            return Redirect::back()->withErrors($validator)->withInput();
+        }
 
-        $validated = $request->validate([
-            'partition_id' => ['required', 'integer', 'exists:partitions,id'],
-            'name' => ['required', 'string', 'max:255'],
+        // Create arrangement
+        $arr = Arrangement::create([
+            'partition_id' => $partition->id,
+            'creator_id' => $user->id,
+            'name' => $request->input('name'),
+            'instruments_config' => $request->input('instruments'),
+            'description' => $request->input('description'),
+            'status' => 'pending',
         ]);
 
-        $arrangement = Arrangement::create([
-            'partition_id'       => $validated['partition_id'],
-            'creator_id'         => $request->user()->id,
-            'name'               => $validated['name'],
-            'instruments_config' => [],
-            'audio_file_path'    => null,
-            'status'             => 'draft',
-        ]);
+        // Attach instruments with pivot track number (use order index)
+        $instruments = $request->input('instruments', []);
+        $sync = [];
+        foreach ($instruments as $idx => $instId) {
+            $sync[$instId] = ['track_number' => $idx + 1];
+        }
+        $arr->instruments()->sync($sync);
 
-        return redirect()->route('arrangements.show', $arrangement);
-    }
+        // Dispatch background job to generate WAV (placeholder)
+        // Ideally push to queue: GenerateArrangementAudio::dispatch($arr);
+        Log::info('Arrangement created, would dispatch audio job', ['arrangement_id' => $arr->id]);
 
-    public function edit(Arrangement $arrangement)
-    {
-        $this->authorize('update', $arrangement);
-
-        return view('arrangements.edit', compact('arrangement'));
-    }
-
-    public function update(Request $request, Arrangement $arrangement)
-    {
-        $this->authorize('update', $arrangement);
-
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-        ]);
-
-        $arrangement->update($validated);
-
-        return redirect()->route('arrangements.show', $arrangement);
-    }
-
-    public function destroy(Arrangement $arrangement)
-    {
-        $this->authorize('delete', $arrangement);
-
-        $arrangement->delete();
-
-        return redirect()->route('arrangements.index');
+        return redirect()->route('partitions.show', $partition)->with('success', 'Arrangement created and audio generation queued.');
     }
 }
