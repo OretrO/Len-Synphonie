@@ -104,14 +104,61 @@
                     @if($partition->arrangements && $partition->arrangements->count())
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             @foreach($partition->arrangements as $arrangement)
-                                <x-card-arrangement :arrangement="$arrangement" :currentUser="$currentUser" />
+                                <div class="bg-slate-800 p-4 rounded border border-slate-700 flex flex-col justify-between h-full">
+
+                                    {{-- Informations de l'arrangement --}}
+                                    <div>
+                                        <div class="flex justify-between items-start">
+                                            <h4 class="font-bold text-white">{{ $arrangement->name ?? 'Sans titre' }}</h4>
+                                            <span class="text-xs px-2 py-0.5 rounded bg-slate-700 text-slate-300">
+                                {{ $arrangement->status ?? 'draft' }}
+                            </span>
+                                        </div>
+                                        <p class="text-xs text-slate-400 mt-1">By {{ $arrangement->user->name ?? 'Unknown' }}</p>
+                                        <p class="text-xs text-slate-500">{{ $arrangement->created_at->diffForHumans() }}</p>
+                                    </div>
+
+                                    {{-- Actions (Boutons) --}}
+                                    <div class="mt-4 flex items-center gap-2 pt-3 border-t border-slate-700">
+
+                                        {{-- Bouton VOIR --}}
+                                        <a href="{{ route('arrangements.show', $arrangement) }}" class="btn btn-outline btn-small text-xs px-3 py-1">
+                                            Voir
+                                        </a>
+
+                                        {{-- Bouton MODIFIER (Si autorisé) --}}
+                                        @can('update', $arrangement)
+                                            <a href="{{ route('arrangements.edit', $arrangement) }}" class="btn btn-outline btn-small text-xs px-3 py-1">
+                                                Éditer
+                                            </a>
+                                        @endcan
+
+                                        {{-- Bouton SUPPRIMER (Si autorisé) --}}
+                                        @can('delete', $arrangement)
+                                            <form action="{{ route('arrangements.destroy', $arrangement) }}"
+                                                  method="POST"
+                                                  class="ml-auto"
+                                                  onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet arrangement ? Cette action est irréversible.');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-500 hover:text-red-400 transition" title="Supprimer">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        @endcan
+                                    </div>
+                                </div>
                             @endforeach
                         </div>
                     @else
                         <div class="text-center py-8 bg-slate-800/50 rounded-lg border border-dashed border-slate-700">
                             <p class="text-slate-400 italic">No arrangements yet.</p>
                             @auth
-                                <p class="text-xs mt-2 text-slate-500">Be the first to create one!</p>
+                                @if(in_array(auth()->user()->role, ['arranger', 'admin']))
+                                    <p class="text-xs mt-2 text-slate-500">Be the first to create one!</p>
+                                @endif
                             @endauth
                         </div>
                     @endif
