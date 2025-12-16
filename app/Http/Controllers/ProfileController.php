@@ -39,11 +39,20 @@ class ProfileController extends Controller
         $user->name = $validated['name'];
         $user->email = $validated['email'];
 
-        if ($request->hasFile('avatar')) {
+        // Suppression explicite de l'avatar
+        if ($request->boolean('remove_avatar')) {
+            if ($user->avatar && !Str::startsWith($user->avatar, 'avatars/default')) {
+                try {
+                    Storage::disk('public')->delete($user->avatar);
+                } catch (\Throwable $e) {
+                    // ignore
+                }
+            }
+            $user->avatar = 'avatars/default.svg';
+        } elseif ($request->hasFile('avatar')) {
             $file = $request->file('avatar');
             $path = $file->store('avatars', 'public');
 
-            // Supprimer l'ancien avatar si ce n'est pas le défaut
             if ($user->avatar && !Str::startsWith($user->avatar, 'avatars/default')) {
                 try {
                     Storage::disk('public')->delete($user->avatar);

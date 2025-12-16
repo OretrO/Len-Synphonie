@@ -67,7 +67,7 @@ class PartitionController extends Controller
         ]);
 
         return redirect()->route('partitions.show', $partition)
-            ->with('success', 'Partition créée avec succès !');
+            ->with('success', 'Score created successfully.');
     }
 
     /**
@@ -118,7 +118,7 @@ class PartitionController extends Controller
         $partition->update($validated);
 
         return redirect()->route('partitions.show', $partition)
-            ->with('success', 'Partition mise à jour avec succès !');
+            ->with('success', 'Score updated successfully.');
     }
 
     /**
