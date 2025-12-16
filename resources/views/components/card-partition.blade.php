@@ -6,7 +6,7 @@
         <svg class="partition-card-new-icon" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
         </svg>
-        
+
         {{-- Indicateur LED --}}
         @if($partition->arrangements_count > 0)
             <div class="partition-card-new-indicator partition-card-new-indicator-active"></div>
@@ -24,7 +24,7 @@
 
     <div class="partition-card-new-content">
         <div class="partition-card-new-badge">Partition</div>
-        
+
         <h3 class="partition-card-new-title" title="{{ $partition->title }}">
             {{ $partition->title }}
         </h3>
@@ -32,6 +32,12 @@
         @if($partition->composer)
             <p class="partition-card-new-composer">
                 Par {{ $partition->composer }}
+            </p>
+        @endif
+
+        @if(!empty($partition->genre))
+            <p class="partition-card-new-genre">
+                <strong>Genre :</strong> {{ $partition->genre }}
             </p>
         @endif
 
