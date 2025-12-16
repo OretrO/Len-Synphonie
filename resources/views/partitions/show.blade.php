@@ -125,10 +125,6 @@
                     <strong>Genre:</strong> {{ $partition->genre }}
                 </p>
 
-                <p class="partition-meta">
-                    <strong>Genre:</strong> {{ $partition->genre }}
-                </p>
-
             <p class="partition-meta">
                 <strong>Date:</strong> {{ $partition->created_at->format('d/m/Y') }}
             </p>
