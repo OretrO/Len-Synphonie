@@ -54,6 +54,10 @@ Route::middleware('auth')->group(function () {
     // Route pour servir les fichiers (PDF/XML) sans lien symbolique
     Route::get('/partitions/{partition}/file/{type}', [PartitionController::class, 'downloadFile'])->name('partitions.file');
 
+    // Création et stockage d'arrangements liés à une partition (nested)
+    Route::get('/partitions/{partition}/arrangements/create', [ArrangementController::class, 'create'])->name('partitions.arrangements.create');
+    Route::post('/partitions/{partition}/arrangements', [ArrangementController::class, 'store'])->name('partitions.arrangements.store');
+
     // Modification et Suppression
     Route::get('/partitions/{partition}/edit', [PartitionController::class, 'edit'])->name('partitions.edit');
     Route::put('/partitions/{partition}', [PartitionController::class, 'update'])->name('partitions.update');

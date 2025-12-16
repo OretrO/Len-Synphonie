@@ -51,8 +51,10 @@
 
                     {{-- Bouton Créer Arrangement (Visible si Arrangeur ou Admin) --}}
                     @if($currentUser instanceof \App\Models\User && in_array($currentUser->role, ['arranger', 'admin']))
-                        @if(\Illuminate\Support\Facades\Route::has('arrangements.create'))
-                            <a href="{{ route('arrangements.create', ['partition' => $partition->id]) }}" class="btn btn-primary">Create arrangement</a>
+                        @if(
+                            \Illuminate\Support\Facades\Route::has('partitions.arrangements.create')
+                        )
+                            <a href="{{ route('partitions.arrangements.create', ['partition' => $partition->id]) }}" class="btn btn-primary">Create arrangement</a>
                         @endif
                     @endif
                 @endauth
