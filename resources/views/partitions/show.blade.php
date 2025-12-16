@@ -19,6 +19,21 @@
                         $avatarPath = $author && !empty($author->avatar) ? ($author->avatar) : asset('avatars/default.svg');
                     @endphp
 
+
+            @auth
+                @if(auth()->user()->id === $partition->user_id || auth()->user()->role === 'admin')
+                    <div class="partition-actions">
+                        <a href="{{ route('partitions.edit', $partition) }}" class="btn btn-outline">
+                            Modifier
+                        </a>
+                        <form action="{{ route('partitions.destroy', $partition) }}" method="POST" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette partition ?');">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger">Supprimer</button>
+                        </form>
+                    </div>
+                @endif
+            @endauth
                     <img src="{{ $avatarPath }}" alt="{{ $author->name ?? 'User' }} avatar" class="navbar-avatar" />
                     <div>
                         <div class="text-sm font-medium">{{ $author->name ?? 'Unknown' }}</div>
@@ -92,12 +107,26 @@
                                 <a href="{{ asset($partition->sheet_file_path) }}" target="_blank" class="btn btn-outline">Open sheet (PDF)</a>
                             @endif
 
+
+
+            <p class="partition-meta">
+                <strong>Created by:</strong> {{ $partition->user->name }}
+            </p>
                             @if(!empty($partition->audio_file_path))
                                 <audio controls src="{{ asset($partition->audio_file_path) }}" class="w-full mt-2">Your browser does not support the audio element.</audio>
                             @endif
                         </div>
                     </div>
 
+                <p class="partition-meta">
+                    <strong>Genre:</strong> {{ $partition->genre }}
+                </p>
+
+            <p class="partition-meta">
+                <strong>Date:</strong> {{ $partition->created_at->format('d/m/Y') }}
+            </p>
+
+        </div>
                 </div>
 
                 {{-- Arrangements --}}
